@@ -1484,5 +1484,114 @@ for disabled in [None,'enabled','mode','kind','match','practice']:
 
 assert len(Path('Evidence/ModeText.bin').read_bytes())<=1024
 
+
+# Default Practice keeps only the mode selector active. Native Stats and all
+# gameplay hooks continue through their original paths while D.enabled is zero.
+for enabled in [0,1]:
+ for menus in [0,1]:
+  for disabled in [None,'mode','kind','match','practice']:
+   practice_scope(disabled);i(D,enabled);i(D+12368,menus)
+   q(D+12040,expression+32);q(D+120,expression)
+   for selected in [expression,expression+32,expression+48]:
+    put(M+0x100,Path('Evidence/StatsVisibility.bin').read_bytes())
+    put(M,bytes.fromhex('4883ec28')+imm('48b9',selected)+imm('48b8',M+0x100)+bytes.fromhex('ffd04883c428c3'))
+    value=c.WINFUNCTYPE(c.c_int)(M)()
+    active=disabled is None and (enabled==1 or menus==1)
+    assert value==int(active and (selected==expression+32 or selected==expression and enabled==1))
+    checks+=1
+   put(M+0x100,Path('Evidence/ModeDispatch.bin').read_bytes());i(D+12032,0)
+   put(M,bytes.fromhex('4883ec28')+imm('48b8',M+0x100)+bytes.fromhex('ffd04883c428c3'))
+   c.WINFUNCTYPE(c.c_int)(M)();assert get(D+12032)==int(active);checks+=1
+   put(M+0x100,Path('Evidence/ModeText.bin').read_bytes())
+   put(M,bytes.fromhex('4883ec28')+imm('49b8',M+0xd038)+imm('48b8',M+0x100)+bytes.fromhex('ffd04883c428c3'))
+   value=c.WINFUNCTYPE(c.c_uint64)(M)()
+   assert value==(D+12100 if active else M+0xd038);checks+=1
+
+# Execute both directions through the complete mode-entry thunk. It must run
+# once on an unpaused safe phase, restore the spot and clear scores, then choose
+# the native two-sided picker or the custom one-sided picker as appropriate.
+restore_address=M+0x1000
+restore_body=Path('Evidence/DefaultPracticeRestore.bin').read_bytes()
+assert len(restore_body)<=2048
+put(restore_address,restore_body)
+native_ui_calls=[]
+native_ui_mock=UiShow(lambda this,delay:native_ui_calls.append((this,delay)))
+put(B+0x7babdd0,jump(c.cast(native_ui_mock,c.c_void_p).value))
+put(B+0x7babb30,jump(c.cast(ui_mock,c.c_void_p).value))
+put(B+0x5d0e950,jump(c.cast(transition_mock,c.c_void_p).value))
+put(B+0x5d59530,bytes.fromhex('8991d0010000c3'))
+put(B+0x5d59570,bytes.fromhex('f30f1189c0010000c3'))
+put(B+0x5d595c0,bytes.fromhex('488b02488981680100008b4208898170010000c3'))
+put(B+0x35e2110,bytes.fromhex('44898491d8010000c3'))
+put(B+0x369ed10,bytes.fromhex('89512044884124c3'))
+q(B+0xf547540,ui);q(B+0xf547a00,pause)
+for request in [0,1,2,3]:
+ for enabled in [0,1]:
+  for disabled in [None,'mode','kind','match','practice','menus']:
+   for phase in [1,3,4,5,6]:
+    for paused in [0,1]:
+     practice_scope(disabled);i(D,enabled);i(D+12368,0 if disabled=='menus' else 1)
+     i(D+12372,request);i(D+12384,0);i(states+0xa0,phase);c.c_ubyte.from_address(pause).value=paused
+     i(D+4,1);i(D+252,1);i(D+164,1);i(D+200,1);i(D+24,119);i(D+28,0)
+     i(D+12048,1 if request==2 else 0);i(D+12052,0);i(match+0x1c8,0);i(match+0x1cc,1)
+     i(D+44,1);f(D+32,3);f(D+36,-15);f(D+40,2);f(D+48,-5)
+     i(D+84,1);i(D+88,0);i(D+92,0);i(match+0x1d8,6);i(match+0x1dc,4)
+     i(match+0x1d0,4);f(match+0x16c,25);f(match+0x1c0,40);i(ui+0x20,-1)
+     ui_calls.clear();native_ui_calls.clear();transition_calls.clear();cpu_calls.clear()
+     put(M,bytes.fromhex('4883ec28')+imm('48b8',restore_address)+bytes.fromhex('ffd04883c428c3'))
+     c.WINFUNCTYPE(None)(M)()
+     scope=disabled is None or disabled=='menus' and enabled==1
+     active=scope and request in [1,2] and enabled==request-1 and phase in [1,5] and not paused
+     assert get(D+12384)==int(active),(request,enabled,disabled,phase,paused)
+     assert get(D+12372)==(0 if active else request)
+     assert get(D+4)==get(D+252)==get(D+164)==get(D+200)==int(not active)
+     assert get(D+28)==(119 if active else 0)
+     assert get(D+12048)==(0 if active else int(request==2))
+     assert get(match+0x1cc)==(0 if active and request==2 else 1)
+     assert get(match+0x1d0)==(1 if active else 4)
+     assert c.c_float.from_address(match+0x16c).value==(-15 if active else 25)
+     assert c.c_float.from_address(match+0x1c0).value==(-5 if active else 40)
+     assert get(match+0x1d8)==(0 if active else 6) and get(match+0x1dc)==(0 if active else 4)
+     assert get(ui+0x20)==(20 if active else -1)
+     assert transition_calls==([(states,5)] if active else [])
+     assert native_ui_calls==([(B+0xdadd380,0)] if active and request==1 else [])
+     assert ui_calls==([(B+0xdadd380,0)] if active and request==2 else [])
+     assert not cpu_calls and get(D)==enabled
+     c.WINFUNCTYPE(None)(M)();assert get(D+12384)==int(active)
+     checks+=1
+
+# Native callers can reach the queued entry from either preplay's early player
+# check or an existing play picker. The full registers/SSE ABI survives the call.
+for picker in ['EarlyPlayCall','InitialPlayCallTick']:
+ practice_scope();i(D,0);i(D+12368,1);i(D+12372,1);i(D+12384,0)
+ i(states+0xa0,1 if picker=='EarlyPlayCall' else 5);c.c_ubyte.from_address(pause).value=0
+ i(D+84,1);i(D+88,0);i(D+92,0);q(D+12376,restore_address)
+ put(M+0x100,Path('Evidence/'+picker+'.bin').read_bytes())
+ # Let each original prologue/epilogue execute after the pending entry is handled.
+ if picker=='EarlyPlayCall':
+  # RCX is a valid object for the original instruction sequence.
+  arg=obj
+ else:arg=initial_state
+ ui_calls.clear();native_ui_calls.clear();transition_calls.clear()
+ put(M,bytes.fromhex('4883ec28')+imm('48b9',arg)+imm('48b8',M+0x100)+bytes.fromhex('ffd04883c428c3'))
+ c.WINFUNCTYPE(None)(M)()
+ assert get(D+12384)==1 and len(native_ui_calls)==1 and not ui_calls
+ c.WINFUNCTYPE(None)(M)();assert get(D+12384)==1 and len(native_ui_calls)==1
+ checks+=1
+q(D+12376,0)
+
+# Directly check volatile integer and vector preservation around native calls.
+practice_scope();i(D,0);i(D+12368,1);i(D+12372,1)
+i(states+0xa0,1);c.c_ubyte.from_address(pause).value=0
+put(vectors,bytes(range(96)))
+abi_entry=bytes.fromhex('4883ec28')+imm('48b8',vectors)
+for x in range(6):abi_entry+=bytes.fromhex('f30f6f')+bytes([0x80+x*8])+struct.pack('<i',x*16)
+abi_expected=[0x1111222233334444,0x2222333344445555,0x3333444455556666,0x4444555566667777,0x5555666677778888,0x6666777788889999]
+for opcode,value in zip(['48b8','48b9','48ba','49b8','49b9','49ba'],abi_expected):abi_entry+=imm(opcode,value)
+abi_entry+=bytes.fromhex('ff15')+struct.pack('<i',len(capture))+capture+struct.pack('<Q',restore_address)
+put(M,abi_entry);c.WINFUNCTYPE(None)(M)()
+assert [c.c_uint64.from_address(saved+x*8).value for x in range(6)]==abi_expected
+assert c.string_at(saved+64,96)==bytes(range(96));checks+=1
+
 print('PASS: %d native hook execution checks (no game access)'%checks)
 

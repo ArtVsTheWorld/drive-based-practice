@@ -15,7 +15,7 @@ try {
         & $output
         if($LASTEXITCODE -ne 0){throw "Check failed: $Name"}
     }
-    foreach($name in @('DriveChecks','NativeDriveChecks','DefenseChecks','OpponentChecks','SessionStatsChecks','ScrimmageChecks','DiagnosticsChecks')){Run-Check $name}
+    foreach($name in @('DriveChecks','NativeDriveChecks','DefenseChecks','OpponentChecks','SessionStatsChecks','ScrimmageChecks','ModeChecks','DiagnosticsChecks')){Run-Check $name}
     if($NativeChecks) {
         Run-Check 'ExportHooks'
         & $Python Tools/test_hooks.py

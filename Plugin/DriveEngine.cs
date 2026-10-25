@@ -2,7 +2,29 @@
 
 namespace SituationalPractice
 {
-    public enum PracticeMode { DrivePractice, Scrimmage }
+    // Keep the original numeric values for short-lived development handoffs.
+    public enum PracticeMode { DrivePractice=0, Scrimmage=1, DefaultPractice=2 }
+    public static class PracticeModes
+    {
+        public static bool IsDrive(PracticeMode mode){return mode==PracticeMode.DrivePractice || mode==PracticeMode.Scrimmage;}
+        public static PracticeMode Next(PracticeMode mode,int steps=1)
+        {
+            if(!IsDrive(mode) && mode!=PracticeMode.DefaultPractice)throw new ArgumentException("Invalid practice mode.");
+            int index=mode==PracticeMode.DefaultPractice?0:mode==PracticeMode.DrivePractice?1:2;
+            index=((index+steps%3)%3+3)%3;
+            return index==0?PracticeMode.DefaultPractice:index==1?PracticeMode.DrivePractice:PracticeMode.Scrimmage;
+        }
+        public static string Label(PracticeMode mode)
+        {
+            return mode==PracticeMode.DefaultPractice?"Mode: Default Practice":mode==PracticeMode.Scrimmage?"Mode: Scrimmage":"Mode: Drive Practice";
+        }
+        public static string Description(PracticeMode mode)
+        {
+            return mode==PracticeMode.DefaultPractice?"Switch to Drive Practice. Moving ball, downs, scoring and CPU play calls. Starts a fresh session.":
+                mode==PracticeMode.DrivePractice?"Switch to Scrimmage. Automatic possession changes, touchdowns and safeties. Starts a fresh session.":
+                "Switch to Default Practice. Normal ball resets and practice play selection. Clears scores and session stats.";
+        }
+    }
     public sealed class PossessionDrive
     {
         public int Possession, Score0, Score1;

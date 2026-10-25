@@ -46,8 +46,13 @@ ignored by Git. Python inspection tools use `requirements-dev.txt` (Capstone).
 - `Plugin/PracticeAction.cs`, `PracticeRunner.cs`, `Diagnostics.cs`: launch and reporting.
 - `NativeDrivePolicy.cs` and `DriveEngine.cs`: drive/scoring rules; keep these unchanged for a relocation-only update.
 
-The first practice snap initializes the session. Test both modes, both user sides,
-timeouts, Choose New Play, re-spotting, turnovers/returns, mode changes and Stats.
+Fresh practice starts with gameplay hooks inactive and only the mode selector
+available. The native menu scope is separate from the drive enable flag. Test
+all three modes, both user sides, timeouts, Choose New Play, re-spotting,
+turnovers/returns, mode changes and Stats. Returning to default practice must
+restore the native HUD flags and two-sided picker; entering a custom mode must
+rebuild its picker once, with no cached selection or penalty loop. Native mode
+entry is applied at the safe preplay or play-selection update on the game thread.
 The yellow first-down line and kicking sequences are still unsupported.
 
 Call Sheet compatibility excludes only the five-byte calls at `0x35ff6ef` and

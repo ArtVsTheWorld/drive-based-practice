@@ -41,7 +41,7 @@ namespace SituationalPractice
                         launched.Add(key);
                         child.Exited+=(sender,eventArgs)=>ObserveHelperExit(child,gamePid,gameStart,diagnostics);
                         child.EnableRaisingEvents=true;
-                        if(log!=null)try{log.Log("[Drive-Based Practice] Ready. Enter offline Dynasty practice and run the first initialization play.",new object[0]);}catch(Exception error){diagnostics.Error("MMC readiness message",error);}
+                        if(log!=null)try{log.Log("[Drive-Based Practice] Ready. Normal practice is the default. Use Pause > Mode for Drive Practice or Scrimmage.",new object[0]);}catch(Exception error){diagnostics.Error("MMC readiness message",error);}
                     }catch(Exception error){
                         diagnostics.Error("Start practice helper for PID "+p.Id,error);
                         if(log!=null)try{log.Log("[Drive-Based Practice] Could not start the helper in "+BuildIdentity.Folder+": "+error.Message,new object[0]);}catch{}

@@ -38,6 +38,7 @@ namespace SituationalPractice
         public int Applied { get { return Int(data+28); } }
         public int Completed { get { return Int(data+72); } }
         public float CompletedGain { get { return Float(data+76); } }
+        public void DiscardEvents(){consumed=Sequence;}
         public long Controller { get { return Long(data+8); } }
         public int UserTeam {get{return Int(data+168);}}
         public int ModeRequests {get{return Int(data+12032);}}
@@ -49,6 +50,7 @@ namespace SituationalPractice
             text.AppendLine("image=0x"+image.ToString("x")+" code=0x"+code.ToString("x")+" code_bytes=20480 data=0x"+data.ToString("x"));
             text.AppendLine("early_picker_transitions="+Int(data+12360)+" last_endplay_caller=0x"+(Long(data+12080)-image).ToString("x")+" endplay_phase="+Int(data+12088));
             text.AppendLine("mode_requests="+ModeRequests+" possession_pending="+Int(data+12048)+" possession_target="+Int(data+12052));
+            text.AppendLine("mode_menu_enabled="+Int(data+12368)+" mode_entry_pending="+Int(data+12372)+" mode_entries_applied="+Int(data+12384));
             text.AppendLine("match=0x"+snap.Match.ToString("x")+" states=0x"+snap.States.ToString("x")+" controller=0x"+BitConverter.ToInt64(block,8).ToString("x"));
             text.AppendLine("phase="+snap.Phase+" possession="+snap.Possession+" down="+snap.NativeDown+" ball="+snap.Ball.ToString("R",CultureInfo.InvariantCulture)+" line="+snap.Line.ToString("R",CultureInfo.InvariantCulture)+" gain="+snap.Gain.ToString("R",CultureInfo.InvariantCulture)+" score="+snap.OffenseScore+":"+snap.DefenseScore);
             text.AppendLine("enabled="+BitConverter.ToInt32(block,0)+" queued_command="+BitConverter.ToInt32(block,24)+" applied_command="+BitConverter.ToInt32(block,28)+" spot_sequence="+BitConverter.ToInt32(block,64)+" completed="+BitConverter.ToInt32(block,72));
@@ -113,6 +115,7 @@ namespace SituationalPractice
                 Write(code+15360,BuildEarlyPlayCall(image,data));
                 Write(code+16384,BuildDefenseCommit(image,data));Write(data+12000,BitConverter.GetBytes(code+16384));
                 Write(code+16896,BuildPlayCallRefresh(image,data));Write(data+12024,BitConverter.GetBytes(code+16896));
+                Write(code+17920,BuildDefaultPracticeRestore(image,data));Write(data+12376,BitConverter.GetBytes(code+17920));
                 uint old; if(!VirtualProtectEx(handle,new IntPtr(code),new UIntPtr(20480),0x20,out old))throw new InvalidOperationException("Cannot protect hook code.");
                 FlushInstructionCache(handle,new IntPtr(code),new UIntPtr(20480));
                 // Freeze threads only for the small patch transaction; always resume.
@@ -150,6 +153,8 @@ namespace SituationalPractice
                     if(!Equal(r.Read(r.code+i*1024,expected.Length),expected))throw new InvalidOperationException("Orphan hook code does not match.");
                     r.installed.Add(new Patch{Address=r.image+Sites[i],Original=Originals[i],Replacement=Pad(Jump(r.code+i*1024),Originals[i].Length)});
                 }
+                var restore=BuildDefaultPracticeRestore(r.image,r.data);
+                if(r.Long(r.data+12376)!=r.code+17920 || !Equal(r.Read(r.code+17920,restore.Length),restore))throw new InvalidOperationException("Default practice restoration code does not match.");
                 r.Dispose();
             } finally {if(r.handle!=IntPtr.Zero){CloseHandle(r.handle);r.handle=IntPtr.Zero;r.game.Dispose();}}
         }
@@ -216,6 +221,7 @@ namespace SituationalPractice
             scenario.Validate(); var snap=Snapshot();
             if(snap.Phase==3)throw new InvalidOperationException("Wait until the current play ends.");
             SetEnabled(false);
+            Write(data+12372,BitConverter.GetBytes(0));
             Write(data+12052,BitConverter.GetBytes(possession));Write(data+12048,BitConverter.GetBytes(possession<0?0:1));
             Write(data+164,BitConverter.GetBytes(openPlayCall?1:0));
             Write(data+200,BitConverter.GetBytes(0));
@@ -236,6 +242,13 @@ namespace SituationalPractice
             if(drive.Possession<0 || drive.Possession>1)throw new InvalidOperationException("Invalid next possession.");
             QueueScores(drive.Score0,drive.Score1);
             QueueScenario(drive.Spot,command,new[]{0f,(float)drive.Spot.Ball-50,0f},drive.Possession,openPlayCall);
+        }
+        public void QueueCustomModeStart(PossessionDrive drive,int command)
+        {
+            QueuePossessionDrive(drive,command,false);
+            Write(data+12012,BitConverter.GetBytes(0));
+            // Rebuild the native picker when leaving the two-sided practice UI.
+            Write(data+12372,BitConverter.GetBytes(2));
         }
         private sealed class MenuEdit {public long Owner,Address,Vtable;public byte[] Original,Replacement;}
         private readonly List<MenuEdit> menuEdits=new List<MenuEdit>();
@@ -284,8 +297,8 @@ namespace SituationalPractice
                 }
             }
             if(modePanel==0)return;
-            string label=mode==PracticeMode.Scrimmage?"Mode: Scrimmage":"Mode: Drive Practice";
-            string description=mode==PracticeMode.Scrimmage?"Switch to Drive Practice. Starts a fresh session with bonus defensive scoring.":"Switch to Scrimmage. Automatic possession changes, touchdowns and safeties. Starts a fresh session.";
+            string label=PracticeModes.Label(mode);
+            string description=PracticeModes.Description(mode);
             MenuText(modePanel,0x70,0xb646440,label,64);
             // Native data binding refreshes these TextMedia objects on every
             // menu draw. Substitute only their serialized values, after that
@@ -301,6 +314,27 @@ namespace SituationalPractice
         {
             if(userTeam<0 || userTeam>1)throw new InvalidOperationException("Invalid user team.");
             Write(data+168,BitConverter.GetBytes(userTeam));
+        }
+        public void BindPracticeMenus()
+        {
+            var snap=Snapshot();Write(data+16,BitConverter.GetBytes(snap.Match));
+            // The selector stays available while all gameplay hooks are inactive.
+            Write(data+12368,BitConverter.GetBytes(1));
+        }
+        public void UseDefaultPractice(bool restoreSelection)
+        {
+            SetEnabled(false);
+            foreach(int offset in new[]{4,84,164,180,192,200,252,12012,12016,12048,12372})Write(data+offset,BitConverter.GetBytes(0));
+            RequestNativeHud(false);
+            if(restoreSelection){
+                var vector=SavedPracticeSpot();var spot=NativeDrivePolicy.StartingSpot(new NativeSnapshot{Ball=vector[1]+50},false);
+                Write(data+32,BitConverter.GetBytes(vector[0]));Write(data+36,BitConverter.GetBytes(vector[1]));Write(data+40,BitConverter.GetBytes(vector[2]));
+                Write(data+44,BitConverter.GetBytes(1));Write(data+48,BitConverter.GetBytes((float)(spot.Ball-50+spot.Distance)));
+                QueueScores(0,0);
+                // The game thread restores the normal two-sided practice picker.
+                Write(data+12372,BitConverter.GetBytes(1));
+            }
+            log("Default Practice: native ball reset and play selection; custom gameplay disabled.");
         }
         public void QueuePlayCall(int userTeam)
         {
@@ -426,6 +460,14 @@ namespace SituationalPractice
                 log("Native score-HUD and down/distance suppression flags cleared for this practice session.");
             }
             Write(data+80,BitConverter.GetBytes(enabled?1:0));
+            if(!enabled)RestoreHudVisibility();
+        }
+        private void RestoreHudVisibility()
+        {
+            if(hudVisibility==null)return;
+            if(Read(image+0xdadd921,1)[0]==0)Write(image+0xdadd921,new byte[]{hudVisibility[0]});
+            if(Read(image+0xdadd924,1)[0]==0)Write(image+0xdadd924,new byte[]{hudVisibility[1]});
+            hudVisibility=null;
         }
         public static byte[] BuildHudEntry(long image,long data)
         {
@@ -464,10 +506,18 @@ namespace SituationalPractice
             b.H("f041ff4270415a589dc3");
             b.Label("native");b.H("415a589d");b.Raw(Originals[5]);b.Raw(Jump(image+Sites[5]+Originals[5].Length));return b.Finish();
         }
-        private static Emitter StatsScope(long image,long data)
+        private static Emitter StatsScope(long image,long data,bool menu=false,bool restore=false)
         {
-            var b=new Emitter();b.H("9c50415249ba");b.Q(data);
-            b.H("41833a01");b.J("0f85","native");
+            var b=new Emitter();
+            if(restore){
+                b.H("9c5048b8");b.Q(data+12376);b.H("488b004885c0");b.J("0f84","restoreDone");
+                b.H("4883ec28ffd04883c428");b.Label("restoreDone");b.H("589d");
+            }
+            b.H("9c50415249ba");b.Q(data);
+            b.H("41833a01");
+            if(menu){b.J("0f84","menuEnabled");b.H("4183ba");b.I(12368);b.H("01");}
+            b.J("0f85","native");
+            if(menu)b.Label("menuEnabled");
             b.H("48b8");b.Q(image+0xd9e3818);b.H("83380e");b.J("0f85","native");
             b.H("48b8");b.Q(image+0xf3f5d48);b.H("833803");b.J("0f85","native");
             b.H("48b8");b.Q(image+0xf6379e0);b.H("488b004885c0");b.J("0f84","native");
@@ -517,7 +567,7 @@ namespace SituationalPractice
         }
         private static byte[] BuildInitialChoiceTick(long image,long data,bool setup)
         {
-            var b=StatsScope(image,data);
+            var b=StatsScope(image,data,false,!setup);
             if(setup){b.H("41837a0401");b.J("0f85","native");}
             if(setup){b.H("4183bac000000000");b.J("0f85","native");}
             b.H("48b8");b.Q(image+0xf8575a0);b.H("488b004885c0");b.J("0f84","native");
@@ -613,7 +663,7 @@ namespace SituationalPractice
         // after the reset is applied, before those players can be penalized.
         public static byte[] BuildEarlyPlayCall(long image,long data)
         {
-            var b=StatsScope(image,data);
+            var b=StatsScope(image,data,false,true);
             b.H("48b8");b.Q(image+0xf8575a0);b.H("488b004885c0");b.J("0f84","native");
             b.H("83b8a000000001");b.J("0f85","native");
             b.H("48b8");b.Q(image+0xf547a00);b.H("488b004885c0");b.J("0f84","unpaused");
@@ -686,15 +736,17 @@ namespace SituationalPractice
         }
         public static byte[] BuildStatsVisibility(long image,long data)
         {
-            var b=StatsScope(image,data);b.H("493b4a78");b.J("0f84","visible");
-            b.H("493b8a");b.I(12040);b.J("0f85","native");
+            var b=StatsScope(image,data,true);
+            b.H("493b8a");b.I(12040);b.J("0f84","visible");
+            b.H("41833a01");b.J("0f85","native");
+            b.H("493b4a78");b.J("0f85","native");
             b.Label("visible");
             b.H("f041ff8280000000415a589db801000000c3");
             b.Label("native");b.H("415a589d");b.Raw(Originals[6]);b.Raw(Jump(image+Sites[6]+Originals[6].Length));return b.Finish();
         }
         public static byte[] BuildModeDispatch(long image,long data)
         {
-            var b=StatsScope(image,data);
+            var b=StatsScope(image,data,true);
             b.H("4983ba");b.I(12040);b.H("00");b.J("0f84","native");
             // This adapter action is unused in Dynasty practice. The custom
             // tile invokes it and its native script resumes the paused game.
@@ -704,12 +756,53 @@ namespace SituationalPractice
         }
         public static byte[] BuildModeText(long image,long data)
         {
-            var b=StatsScope(image,data);
+            var b=StatsScope(image,data,true);
             b.H("4d3b82");b.I(12056);b.J("0f85","description");
             b.H("4d8d82");b.I(12100);b.J("e9","native");
             b.Label("description");b.H("4d3b82");b.I(12064);b.J("0f85","native");
             b.H("4d8d82");b.I(12164);
             b.Label("native");b.H("415a589d");b.Raw(Originals[14]);b.Raw(Jump(image+Sites[14]+Originals[14].Length));return b.Finish();
+        }
+        public static byte[] BuildDefaultPracticeRestore(long image,long data)
+        {
+            var b=StatsScope(image,data,true);
+            // 1 returns to native practice; 2 enters a custom mode from native
+            // practice. Check the requested activation before changing any UI.
+            b.H("418b82");b.I(12372);b.H("83f801");b.J("0f85","customRequest");
+            b.H("41833a00");b.J("0f85","native");b.J("e9","checkPhase");
+            b.Label("customRequest");b.H("83f802");b.J("0f85","native");
+            b.H("41833a01");b.J("0f85","native");
+            b.Label("checkPhase");
+            b.H("48b8");b.Q(image+0xf8575a0);b.H("488b004885c0");b.J("0f84","native");
+            b.H("8b80a000000083f801");b.J("0f84","safePhase");
+            b.H("83f805");b.J("0f85","native");
+            b.Label("safePhase");
+            b.H("48b8");b.Q(image+0xf547a00);b.H("488b004885c0");b.J("0f84","restore");
+            b.H("803800");b.J("0f85","native");
+            b.Label("restore");b.H("41c782");b.I(12372);b.I(0);
+            b.H("41c742040000000041c782fc0000000000000041c782a40000000000000041c782c800000000000000");
+            b.H("51524150415141534881ec88000000");
+            for(int x=0;x<6;x++){b.H("f30f7f");b.B((byte)(0x84+x*8));b.H("24");b.I(32+x*16);}
+            // Setters and the complete native practice notification run only on
+            // the game thread. Return to the picker without committing a CPU play.
+            EmitPossession(b,image,data);
+            b.H("498b4a10418b522c48b8");b.Q(image+0x5d59530);b.H("ffd0");
+            b.H("49ba");b.Q(data);b.H("498b4a10f3410f104a3048b8");b.Q(image+0x5d59570);b.H("ffd0");
+            b.H("49ba");b.Q(data);b.H("498b4a10498d522041b00148b8");b.Q(image+0x5d595c0);b.H("ffd0");
+            EmitScores(b,image,data);
+            b.H("418b42184189421c");
+            b.H("48b8");b.Q(image+0xf547540);b.H("488b084885c9");b.J("0f84","defaultHudDone");
+            b.H("ba1400000041b00148b8");b.Q(image+0x369ed10);b.H("ffd0");
+            b.Label("defaultHudDone");
+            b.H("48b8");b.Q(image+0xf8575a0);b.H("488b08ba0500000048b8");b.Q(image+0x5d0e950);b.H("ffd0");
+            b.H("49ba");b.Q(data);b.H("41833a01");b.J("0f84","customUi");
+            b.H("48b9");b.Q(image+0xdadd380);b.H("33d248b8");b.Q(image+0x7babdd0);b.H("ffd0");b.J("e9","uiDone");
+            b.Label("customUi");b.H("48b9");b.Q(image+0xdadd380);b.H("33d248b8");b.Q(image+0x7babb30);b.H("ffd0");
+            b.Label("uiDone");
+            b.H("49ba");b.Q(data);b.H("f041ff82");b.I(12384);
+            for(int x=0;x<6;x++){b.H("f30f6f");b.B((byte)(0x84+x*8));b.H("24");b.I(32+x*16);}
+            b.H("4881c488000000415b415941585a59");
+            b.Label("native");b.H("415a589dc3");return b.Finish();
         }
         private static void EmitPossession(Emitter b,long image,long data)
         {
@@ -827,6 +920,7 @@ namespace SituationalPractice
             if(handle==IntPtr.Zero)return;
             if(!game.HasExited) {
                 SetEnabled(false);
+                Write(data+12368,BitConverter.GetBytes(0));Write(data+12372,BitConverter.GetBytes(0));
                 foreach(var edit in menuEdits){
                     try{if(Long(edit.Owner)==edit.Vtable && edit.Replacement!=null && Equal(Read(edit.Address,edit.Replacement.Length),edit.Replacement))Write(edit.Address,edit.Original);}
                     catch(InvalidOperationException){log("Mode menu object was released during practice exit; skipped restoring its former text.");}
@@ -840,11 +934,7 @@ namespace SituationalPractice
                     }
                 }
                 log("Disabled; all practice hook sites restored.");
-                if(hudVisibility!=null) {
-                    if(Read(image+0xdadd921,1)[0]==0)Write(image+0xdadd921,new byte[]{hudVisibility[0]});
-                    if(Read(image+0xdadd924,1)[0]==0)Write(image+0xdadd924,new byte[]{hudVisibility[1]});
-                    hudVisibility=null;
-                }
+                RestoreHudVisibility();
                 // Do not free code: suspended threads can be inside a trampoline.
                 // On a failed idle/ownership check, retain the handle so Disable
                 // can be retried. Hooks are already in their inactive state.

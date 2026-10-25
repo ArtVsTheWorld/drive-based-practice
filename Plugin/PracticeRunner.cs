@@ -76,6 +76,26 @@ namespace SituationalPractice
             operation="request play-call screen";Sample(null,true);
             runtime.QueuePlayCall(userTeam);Log("Play-call requested for user team "+userTeam+"; CPU chooses the other side.");
         }
+        private void ChangeMode(PracticeMode next,NativeSnapshot snap)
+        {
+            bool wasDefault=session.Mode==PracticeMode.DefaultPractice;
+            if(wasDefault)starting=NativeDrivePolicy.StartingSpot(new NativeSnapshot{Ball=savedSpot[1]+50},false);
+            session=new SessionStats{Mode=next,ResumeSpot=starting.Copy()};sessionPlay=0;
+            runtime.DiscardEvents();
+            runtime.PublishStats(session);runtime.FindModeMenu(next);
+            previous=null;pending=null;sideResetRequested=false;waitingResult=0;outcomeSpotted=false;manualSpot=false;livePlay=false;seen=runtime.Completed;plays=0;
+            if(next==PracticeMode.DefaultPractice){
+                sideReset=false;runtime.UseDefaultPractice(true);
+            }else{
+                runtime.RequestNativeHud(true);
+                var fresh=starting.Copy();fresh.Down=1;fresh.Distance=Math.Min(10,100-fresh.Ball);
+                var drive=new PossessionDrive{Possession=snap.Possession,Spot=fresh,Score0=0,Score1=0};
+                if(wasDefault)runtime.QueueCustomModeStart(drive,++command);
+                else runtime.QueuePossessionDrive(drive,++command,snap.Phase!=1 && snap.Phase!=5);
+                pending=fresh;sideReset=true;
+            }
+            Log("Practice mode changed to "+next+"; fresh session, scores and stats reset.");
+        }
         private void Attach()
         {
             operation="attach native hooks";attachAttempts++;
@@ -85,11 +105,17 @@ namespace SituationalPractice
             userTeam=snap.Possession;
             runtime.ConfigureUserTeam(userTeam);
             if(session==null || sessionMatch!=snap.Match){session=SessionStats.ReadHandoff(Path.Combine(folder,"session-handoff.bin"),runtime.GameStart,snap.Match)??new SessionStats();sessionMatch=snap.Match;sessionPlay=Math.Max(0,session.LastPlay);}
+            runtime.BindPracticeMenus();
             runtime.PublishStats(session);runtime.FindStatsMenu();
             runtime.FindModeMenu(session.Mode);modeRequests=runtime.ModeRequests;
             starting=session.ResumeSpot??NativeDrivePolicy.StartingSpot(snap,false);session.ResumeSpot=starting.Copy();
             savedSpot=runtime.SavedPracticeSpot();
-            runtime.RequestNativeHud(true);lastError=null;
+            lastError=null;
+            if(session.Mode==PracticeMode.DefaultPractice){
+                runtime.UseDefaultPractice(false);seen=runtime.Completed;resumeUserTeam=-1;
+                Log("Default Practice ready. Pause > Mode selects Drive Practice or Scrimmage. No initialization play needed for normal practice.");return;
+            }
+            runtime.RequestNativeHud(true);
             if(resumeUserTeam>=0){
                 runtime.ResumeExistingSession(resumeUserTeam);userTeam=resumeUserTeam;previous=snap;seen=runtime.Completed;pending=null;
                 resumeUserTeam=-1;
@@ -117,22 +143,18 @@ namespace SituationalPractice
                             runtime.FindModeMenu(session.Mode);
                             if(runtime.ModeRequests!=modeRequests && snap.Phase!=3){
                                 int requests=runtime.ModeRequests-modeRequests;modeRequests=runtime.ModeRequests;
-                                if((requests&1)!=0){
-                                    PracticeMode next=session.Mode==PracticeMode.DrivePractice?PracticeMode.Scrimmage:PracticeMode.DrivePractice;
-                                    session=new SessionStats{Mode=next,ResumeSpot=starting.Copy()};sessionPlay=0;
-                                    runtime.PublishStats(session);runtime.FindModeMenu(next);
-                                    var fresh=starting.Copy();fresh.Down=1;fresh.Distance=Math.Min(10,100-fresh.Ball);
-                                    runtime.QueuePossessionDrive(new PossessionDrive{Possession=snap.Possession,Spot=fresh,Score0=0,Score1=0},++command,snap.Phase!=1 && snap.Phase!=5);
-                                    // Preserve an already chosen pre-snap play or
-                                    // the currently open picker. Reopening from
-                                    // paused preplay reuses stale UI registration.
-                                    // The next completed snap opens its normal picker.
-                                    pending=fresh;previous=null;sideReset=true;sideResetRequested=false;waitingResult=0;outcomeSpotted=false;manualSpot=false;livePlay=false;seen=runtime.Completed;plays=0;
-                                    Log("Practice mode changed to "+next+"; fresh drive, scores and session stats reset.");
-                                }
+                                PracticeMode next=PracticeModes.Next(session.Mode,requests);
+                                if(next!=session.Mode)ChangeMode(next,snap);
                             }
                             operation="check saved practice spot";
                             var selectedSpot=runtime.SavedPracticeSpot();
+                            if(snap.Match!=sessionMatch)throw new InvalidOperationException("Waiting for offline Dynasty practice session to settle.");
+                            if(session.Mode==PracticeMode.DefaultPractice){
+                                // No drive commands, CPU picks, Stats or custom
+                                // scoring in the game's original practice mode.
+                                savedSpot=selectedSpot;runtime.DiscardEvents();Sample(snap,phaseChanged);
+                                Thread.Sleep(40);continue;
+                            }
                             bool changed=selectedSpot[0]!=savedSpot[0] || selectedSpot[1]!=savedSpot[1] || selectedSpot[2]!=savedSpot[2];
                             if(snap.Phase!=3){savedSpot=selectedSpot;if(changed && previous!=null && pending==null)RestartAtSavedSpot(snap,selectedSpot);}
                             // Flip Sides can update possession before the native

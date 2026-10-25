@@ -16,7 +16,7 @@ namespace SituationalPractice
         public readonly TeamPracticeStats[] Teams={new TeamPracticeStats(),new TeamPracticeStats()};
         private int lastPlay=-1;
         public Scenario ResumeSpot;
-        public PracticeMode Mode;
+        public PracticeMode Mode=PracticeMode.DefaultPractice;
         public static DefensiveResult Classify(NativeSnapshot before,NativeSnapshot after)
         {
             bool changed=before.Possession!=after.Possession;
@@ -37,6 +37,7 @@ namespace SituationalPractice
         }
         public int Record(int play,NativeSnapshot before,NativeSnapshot after,float gain,PracticeMode mode=PracticeMode.DrivePractice)
         {
+            if(mode==PracticeMode.DefaultPractice)return 0;
             if(play<=lastPlay)return 0;
             if(before.Possession<0 || before.Possession>1)throw new InvalidOperationException("Invalid practice possession.");
             lastPlay=play;var offense=Teams[before.Possession];var defense=Teams[1-before.Possession];
@@ -68,10 +69,10 @@ namespace SituationalPractice
                 if(DateTime.UtcNow-File.GetLastWriteTimeUtc(path)>TimeSpan.FromSeconds(30))return null;
                 using(var r=new BinaryReader(File.OpenRead(path))){
                     if(r.ReadInt64()!=0x315453545350 || r.ReadInt64()!=gameStart || r.ReadInt64()!=match)return null;
-                    var s=new SessionStats();s.lastPlay=r.ReadInt32();
+                    var s=new SessionStats{Mode=PracticeMode.DrivePractice};s.lastPlay=r.ReadInt32();
                     foreach(var t in s.Teams){t.Plays=r.ReadInt32();t.Yards=r.ReadDouble();t.FirstDowns=r.ReadInt32();t.Touchdowns=r.ReadInt32();t.Interceptions=r.ReadInt32();t.FumbleRecoveries=r.ReadInt32();t.DownStops=r.ReadInt32();t.ReturnTouchdowns=r.ReadInt32();t.DefensivePoints=r.ReadInt32();}
                     if(r.BaseStream.Position<r.BaseStream.Length){s.ResumeSpot=new Scenario{Ball=r.ReadDouble(),Distance=r.ReadDouble(),Down=r.ReadInt32(),Seconds=0,ClockEnabled=false,EndBehavior=EndBehavior.RepeatScenario};s.ResumeSpot.Validate();}
-                    if(r.BaseStream.Position<r.BaseStream.Length){s.Mode=(PracticeMode)r.ReadInt32();if(s.Mode!=PracticeMode.DrivePractice && s.Mode!=PracticeMode.Scrimmage)return null;foreach(var t in s.Teams)t.Safeties=r.ReadInt32();}
+                    if(r.BaseStream.Position<r.BaseStream.Length){s.Mode=(PracticeMode)r.ReadInt32();if(!PracticeModes.IsDrive(s.Mode) && s.Mode!=PracticeMode.DefaultPractice)return null;foreach(var t in s.Teams)t.Safeties=r.ReadInt32();}
                     return s;
                 }
             }catch(IOException){return null;}finally{File.Delete(path);}
