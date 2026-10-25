@@ -606,7 +606,7 @@ for disabled in [None,'enabled','mode','kind','match','practice']:
 
   for adapter in [B+0xdadd380,M+0xa800]:
 
-   practice_scope(disabled);i(states+0xa0,phase);i(telemetry,0);i(telemetry+4,99);i(telemetry+8,0);i(D+176,0)
+   practice_scope(disabled);i(D+12448,0);i(states+0xa0,phase);i(telemetry,0);i(telemetry+4,99);i(telemetry+8,0);i(D+176,0)
 
    put(M,bytes.fromhex('4883ec28')+imm('48b9',adapter)+bytes.fromhex('baff000000')+imm('48b8',M+0x100)+bytes.fromhex('ffd04883c428c3'))
 
@@ -625,6 +625,23 @@ for disabled in [None,'enabled','mode','kind','match','practice']:
    checks+=1
 
 assert len(Path('Evidence/PracticePlayCallUi.bin').read_bytes())<=1024
+
+# The native initialization notification is suppressed only while an owned
+# mode transaction is rebuilding the lineups. Ordinary practice keeps its UI.
+for enabled in [0,1]:
+ for request in [0,1,2,3]:
+  for phase in [1,5]:
+   practice_scope();i(D,enabled);i(D+12368,1);i(D+12448,request);i(states+0xa0,phase)
+   i(telemetry,0);i(telemetry+8,0);i(D+176,0)
+   put(M,bytes.fromhex('4883ec28')+imm('48b9',B+0xdadd380)+bytes.fromhex('33d2')+imm('48b8',M+0x100)+bytes.fromhex('ffd04883c428c3'))
+   c.WINFUNCTYPE(None)(M)()
+   suppressed=phase==5 and request in [1,2]
+   custom=not suppressed and enabled==1 and phase==5
+   assert get(telemetry)==(0 if suppressed else 1 if custom else 2)
+   assert get(telemetry+8)==int(not suppressed and not custom)
+   assert get(D+176)==int(custom)
+   checks+=1
+i(D+12448,0);i(D+12368,0)
 
 # Published filtered choice and matching offense payload for the phase-5 hook.
 
@@ -1543,11 +1560,10 @@ for request in [0,1,2,3]:
      c.WINFUNCTYPE(None)(M)()
      scope=disabled is None or disabled=='menus' and enabled==1
      active=scope and request in [1,2] and enabled==request-1 and phase in [1,5] and not paused
-     resumed=active and request==1
-     assert get(D+12384)==int(resumed),(request,enabled,disabled,phase,paused)
+     assert get(D+12384)==0,(request,enabled,disabled,phase,paused)
      assert get(D+12372)==(0 if active else request)
      assert get(D+4)==get(D+252)==get(D+164)==get(D+200)==int(not active)
-     assert get(D+28)==(119 if resumed else 0)
+     assert get(D+28)==0
      if active:
       assert c.c_uint64.from_address(D+12400).value==match and c.c_uint64.from_address(D+12408).value==states
       assert get(D+12416)==0 and get(D+12420)==1
@@ -1560,11 +1576,11 @@ for request in [0,1,2,3]:
      assert c.c_float.from_address(match+0x1c0).value==(-5 if active else 40)
      assert get(match+0x1d8)==(0 if active else 6) and get(match+0x1dc)==(0 if active else 4)
      assert get(ui+0x20)==(20 if active else -1)
-     assert transition_calls==([(states,1 if resumed else 5)] if active else [])
+     assert transition_calls==([(states,5)] if active else [])
      assert not native_ui_calls and not ui_calls
      assert not cpu_calls and get(D)==enabled
-     assert get(D+12448)==(2 if active and not resumed else 0)
-     if active and not resumed:
+     assert get(D+12448)==(request if active else 0)
+     if active:
       # Native initialization clears selections in stages 0/1. Showing UI then
       # loses a cached/fast choice, which reproduced the mode-switch hang.
       for stage in [0,1]:
@@ -1572,7 +1588,7 @@ for request in [0,1,2,3]:
        assert not native_ui_calls and not ui_calls and get(D+28)==0 and get(D+12384)==0
       i(initial_state+0x10,2);c.WINFUNCTYPE(None)(M)()
       assert get(D+28)==119 and get(D+12448)==0 and get(D+12384)==1
-      assert not native_ui_calls
+      assert native_ui_calls==([(B+0xdadd380,0)] if request==1 else [])
       assert ui_calls==([(B+0xdadd380,0)] if request==2 else [])
      c.WINFUNCTYPE(None)(M)();assert get(D+12384)==int(active)
      checks+=1
@@ -1592,10 +1608,10 @@ for picker in ['EarlyPlayCall','InitialPlayCallTick']:
  ui_calls.clear();native_ui_calls.clear();transition_calls.clear()
  put(M,bytes.fromhex('4883ec28')+imm('48b9',arg)+imm('48b8',M+0x100)+bytes.fromhex('ffd04883c428c3'))
  c.WINFUNCTYPE(None)(M)()
- assert get(D+12384)==1 and get(D+12448)==0 and get(states+0xa0)==1 and not native_ui_calls and not ui_calls
+ assert get(D+12384)==0 and get(states+0xa0)==5 and not native_ui_calls and not ui_calls
  i(initial_state+0x10,2);c.WINFUNCTYPE(None)(M)()
- assert get(D+12384)==1 and not native_ui_calls and not ui_calls
- c.WINFUNCTYPE(None)(M)();assert get(D+12384)==1 and not native_ui_calls and not ui_calls
+ assert get(D+12384)==1 and len(native_ui_calls)==1 and not ui_calls
+ c.WINFUNCTYPE(None)(M)();assert get(D+12384)==1 and len(native_ui_calls)==1 and not ui_calls
  checks+=1
 q(D+12376,0)
 
@@ -1606,10 +1622,16 @@ for team in [0,1]:
   practice_scope();i(D,1);i(D+12368,1);i(D+12372,2);i(D+12384,0)
   i(D+12448,0);i(D+24,141);i(D+28,0);i(states+0xa0,phase);c.c_ubyte.from_address(pause).value=0
   i(manager+0x50c,0x101);i(D+12048,1);i(D+12052,team);i(match+0x1c8,team)
+  i(initial_state+0x10,0)
   i(D+44,1);f(D+36,-15);f(D+48,-5);i(D+84,0)
   ui_calls.clear();native_ui_calls.clear();transition_calls.clear();cpu_calls.clear()
   put(M,bytes.fromhex('4883ec28')+imm('48b8',restore_address)+bytes.fromhex('ffd04883c428c3'))
   c.WINFUNCTYPE(None)(M)()
+  assert get(states+0xa0)==5 and get(D+28)==0 and not ui_calls and not native_ui_calls
+  for stage in [0,1]:
+   i(initial_state+0x10,stage);c.WINFUNCTYPE(None)(M)()
+   assert get(D+28)==0 and get(D+12384)==0
+  i(initial_state+0x10,2);c.WINFUNCTYPE(None)(M)()
   assert get(states+0xa0)==1 and get(D+28)==141 and get(D+12384)==1 and get(D+12448)==0
   assert get(manager+0x50c)==0x101 and not ui_calls and not native_ui_calls and not cpu_calls
   assert get(D+12416)==team and get(D+12420)==1
@@ -1677,10 +1699,13 @@ for team in [0,1]:
  practice_scope();i(D+12368,1);i(D+12372,2);i(D+12384,0)
  i(D+24,151);i(D+28,0);i(D+72,17);i(D+12448,0);i(states+0xa0,1);c.c_ubyte.from_address(pause).value=0
  i(manager+0x50c,0x101);i(match+0x1c8,team);i(D+12048,1);i(D+12052,team)
+ i(initial_state+0x10,0)
  i(D+44,1);f(D+32,0);f(D+36,-15);f(D+40,0);f(D+48,-5)
  i(D+84,1);i(D+88,0);i(D+92,0);first_snap_calls.clear();cpu_calls.clear()
  put(M,bytes.fromhex('4883ec28')+imm('48b8',restore_address)+bytes.fromhex('ffd04883c428c3'))
  c.WINFUNCTYPE(None)(M)()
+ assert not first_snap_calls and get(D+28)==0 and get(states+0xa0)==5
+ i(initial_state+0x10,2);c.WINFUNCTYPE(None)(M)()
  assert first_snap_calls==[(B+0xdadd380,0)] and get(D+28)==151 and get(D+12448)==0
  assert get(D+12440)==17 and get(D+72)==18 and c.c_float.from_address(D+76).value==4
  assert get(D+12416)==team and get(D+12420)==1 and get(match+0x1d0)==2

@@ -574,10 +574,15 @@ namespace SituationalPractice
         }
         public static byte[] BuildPracticePlayCallUi(long image,long data)
         {
-            var b=StatsScope(image,data);
+            var b=StatsScope(image,data,true);
             b.H("48b8");b.Q(image+0xdadd380);b.H("483bc8");b.J("0f85","native");
             b.H("48b8");b.Q(image+0xf8575a0);b.H("488b004885c0");b.J("0f84","native");
             b.H("83b8a000000005");b.J("0f85","native");
+            // Native state entry may send its own picker notification. During
+            // a mode reset, finish lineup initialization before showing any UI.
+            b.H("418b82");b.I(12448);b.H("83e80183f801");b.J("0f87","normalPicker");
+            b.H("415a589dc3");
+            b.Label("normalPicker");b.H("41833a01");b.J("0f85","native");
             b.H("f041ff82b0000000415a589d33d2");b.Raw(Jump(image+0x7babb30));
             // State entry also sends a practice notification. Redirect it before
             // the UI queues the opposite side, preserving the normal UI flow.
@@ -838,16 +843,9 @@ namespace SituationalPractice
             b.H("48b8");b.Q(image+0xf547540);b.H("488b084885c9");b.J("0f84","defaultHudDone");
             b.H("ba1400000041b00148b8");b.Q(image+0x369ed10);b.H("ffd0");
             b.Label("defaultHudDone");
-            // A mode change can keep the valid cached plays for both teams.
-            // Resume preplay directly instead of reopening a picker through
-            // the pause-menu flow. Only an incomplete initial selection needs UI.
-            b.H("49ba");b.Q(data);b.H("41833a01");b.J("0f84","enterCustomPicker");
-            b.Label("resumeMode");
-            b.H("48b8");b.Q(image+0xf8575a0);b.H("488b08ba0100000048b8");b.Q(image+0x5d0e950);b.H("ffd0");b.J("e9","uiDone");
-            b.Label("enterCustomPicker");
-            b.H("48b8");b.Q(image+0xfa582a0);b.H("488b004885c0");b.J("0f84","needModePicker");
-            b.H("6681b80c0500000101");b.J("0f84","resumeMode");
-            b.Label("needModePicker");
+            // A real state exit/entry is required to rebuild player lineups.
+            // Requesting preplay while already in preplay leaves them unloaded.
+            // Keep the mode transaction pending until initialization finishes.
             b.H("48b8");b.Q(image+0xf8575a0);b.H("488b08ba0500000048b8");b.Q(image+0x5d0e950);b.H("ffd0");
             RestoreCallRegisters(b);b.J("e9","native");
             b.Label("pendingUi");
@@ -862,9 +860,14 @@ namespace SituationalPractice
             b.H("418b82");b.I(12444);b.H("413b4218");b.J("0f85","native"); // captured command == current command
             b.H("41c782");b.I(12448);b.I(0);
             SaveCallRegisters(b);
+            b.H("48b8");b.Q(image+0xfa582a0);b.H("488b004885c0");b.J("0f84","modeNeedsPicker");
+            b.H("6681b80c0500000101");b.J("0f84","resumeMode");
+            b.Label("modeNeedsPicker");
             b.H("41833a01");b.J("0f84","customUi");
             b.H("48b9");b.Q(image+0xdadd380);b.H("33d248b8");b.Q(image+0x7babdd0);b.H("ffd0");b.J("e9","uiDone");
-            b.Label("customUi");b.H("48b9");b.Q(image+0xdadd380);b.H("33d248b8");b.Q(image+0x7babb30);b.H("ffd0");
+            b.Label("customUi");b.H("48b9");b.Q(image+0xdadd380);b.H("33d248b8");b.Q(image+0x7babb30);b.H("ffd0");b.J("e9","uiDone");
+            b.Label("resumeMode");
+            b.H("48b8");b.Q(image+0xf8575a0);b.H("488b08ba0100000048b8");b.Q(image+0x5d0e950);b.H("ffd0");
             b.Label("uiDone");
             b.H("49ba");b.Q(data);b.H("41c782");b.I(12448);b.I(0);
             b.H("49ba");b.Q(data);b.H("f041ff82");b.I(12384);b.H("418b42184189421c");

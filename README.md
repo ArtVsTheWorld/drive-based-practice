@@ -45,7 +45,7 @@ no game clock, and kicking sequences are not supported. Logs and reports are in
 
 ## Source
 
-Current version: **0.8.13 beta**. Fourth-down line visibility and resuming the
+Current version: **0.8.14 beta**. Fourth-down line visibility and resuming the
 current plays after a mode change are being tested.
 
 [Build and test](docs/building.md) | [Updating after an EA patch](docs/updating.md)

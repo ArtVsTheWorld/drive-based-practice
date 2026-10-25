@@ -118,7 +118,7 @@ namespace SituationalPractice
             if(resumeUserTeam>=0){
                 runtime.ResumeExistingSession(resumeUserTeam);userTeam=resumeUserTeam;previous=snap;seen=runtime.Completed;pending=null;
                 resumeUserTeam=-1;
-                if(snap.Phase==5){
+                if(snap.Phase==1 || snap.Phase==5){
                     var spot=NativeDrivePolicy.StartingSpot(snap,true);
                     runtime.QueueCustomModeStart(new PossessionDrive{Possession=snap.Possession,Spot=spot,Score0=snap.OffenseScore,Score1=snap.DefenseScore},++command);
                     pending=spot;sideReset=true;previous=null;

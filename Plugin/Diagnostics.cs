@@ -12,7 +12,7 @@ namespace SituationalPractice
 {
     internal static class BuildIdentity
     {
-        internal const string Version="0.8.13";
+        internal const string Version="0.8.14";
         internal static string Folder {get{return FolderForAssembly(typeof(BuildIdentity).Assembly.Location);}}
         internal static string FolderForAssembly(string assemblyPath)
         {
