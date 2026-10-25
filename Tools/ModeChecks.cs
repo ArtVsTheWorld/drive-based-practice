@@ -36,6 +36,7 @@ class ModeChecks
         Check(NativeRuntime.BuildDefenseCommit(image,data).Length<=512,"CPU commit fits before the refresh helper");
         Check(NativeRuntime.BuildPlayCallRefresh(image,data).Length<=1024,"Refresh helper fits before mode entry");
         Check(NativeRuntime.BuildDefaultPracticeRestore(image,data).Length<=2048,"Mode entry fits in its reserved block");
+        Check(NativeRuntime.BuildEarlyOffense(image,data).Length<=2048,"Early CPU offense fits its reserved block");
         int pointer=NativeRuntime.RefreshEntryOffset,tag=NativeRuntime.OpponentPossessionOffset;
         Check(pointer+8<=tag || tag+4<=pointer,"A CPU possession tag must not overlap the refresh address");
         Check(pointer>=12388 && pointer+8<=12400,"The refresh address fits between menu state and the start snapshot");

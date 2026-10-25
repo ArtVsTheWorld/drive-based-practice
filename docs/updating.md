@@ -57,7 +57,10 @@ native phase 5 initialization, then resume phase 1 with the existing cached play
 The phase-5 UI notification is suppressed only while the mode transaction is
 pending. Calling phase 1 while already in phase 1 skips native entry and leaves
 players unloaded. Returning to Default Practice always opens its native two-sided
-picker after stage 2, including when both cached plays are ready. Never send
+picker after stage 2, including when both cached plays are ready. Clear only the
+manager readiness bytes at +0x50c/+0x50d before notifying Default Practice: the
+service can wait for fresh choices while HasTeamCalledPlay still reads old 1/1
+flags, causing a hidden picker. Leave neighboring manager fields intact. Never send
 that UI notification before native initialization finishes.
 Choose New Play remains available. All custom-mode changes use this same entry.
 Native mode
@@ -90,3 +93,25 @@ Kicking sequences are still unsupported.
 Call Sheet compatibility excludes only the five-byte calls at `0x35ff6ef` and
 `0x7b7e964` in the current layout. The surrounding code and owned hook sites remain
 checked. Re-establish those exclusions from the new code after an update.
+
+## CPU offense before a defensive selection
+
+At phase-5 stage 2, resolve one local user from the native controller bindings
+`[image+0xf857018]`, vtable `0xb324050`, two 44-byte records at +0x148/+0x174.
+Accept a controller index 0..7 with its matching team side, and an unbound
+other side (-1/255). Ambiguous bindings retain selection-based identification.
+Early offensive payloads use ready value 2; ordinary post-selection payloads use 1.
+The game-thread helper at code+19968 checks the bound match, mode, phase, stage,
+identity, possession, unchanged binding object/records, current service selection,
+empty manager readiness, and pending mode commands before registering only the CPU
+offense. Its pointer is at data+12456; never overlap the first-snap snapshot. Code
+allocation is 24576 bytes, with 2048 reserved for this helper.
+
+The normal native registration updates the actual formation/package. Refresh the
+native personnel widget with DefPlaycallTimerEnded (0x7b84950), then
+DefPlaycallTimerStarted (0x7b848a0, zero/untimed). These functions only post UI data;
+they do not start a gameplay clock. Resetting its value avoids stale personnel
+on successive untimed calls. Diagnostics count early offense and widget updates.
+If asynchronous UI initialization clears a submitted offense, clear the early
+latch and retry against the latest bindings and service flags. Never auto-select
+a human defense, commit twice, or retain a payload after a side/possession change.

@@ -14,7 +14,7 @@ B=0x140000000;D=0x200000000;M=0x50000000
 
 sites=[0x4ff39ce,0x4ff39fb,0x4ff3d66]; skips=[0x4ff39fb,0x4ff3a97,0x4ff3e03]; sizes=[16,20,20]
 
-pages={ (B+r)&~0xffff for r in sites+skips+[0xd9e3818,0xf3f5d48,0xf8576b0,0xf8575a0,0xf6379e0,0xf547a00,0xf547540,0x369ed10,0x5d59530,0x5d59570,0x5d595c0,0x35e2110,0x377bb40,0x7b99d90,0x5d49e30,0x5d4a02f,0x5d72491,0x5d5ae51,0x35ff120,0x7b7e7e0,0x7babb30,0xfa582a0,0xdadd380,0x5d0e950,0x7babdd0,0x3f079e0,0x2ad8410,0xf8abb50,0x5d59f20,0x7bcad50,0x7c17d20,0xbae5718,0x25a3060,0x5d4a660] }
+pages={ (B+r)&~0xffff for r in sites+skips+[0xd9e3818,0xf3f5d48,0xf8576b0,0xf8575a0,0xf6379e0,0xf547a00,0xf547540,0x369ed10,0x5d59530,0x5d59570,0x5d595c0,0x35e2110,0x377bb40,0x7b99d90,0x5d49e30,0x5d4a02f,0x5d72491,0x5d5ae51,0x35ff120,0x7b7e7e0,0x7babb30,0xfa582a0,0xdadd380,0x5d0e950,0x7babdd0,0x3f079e0,0x2ad8410,0xf8abb50,0x5d59f20,0x7bcad50,0x7c17d20,0xbae5718,0x25a3060,0x5d4a660,0x7b848a0] }
 
 for a,n in [(M,0x10000),(D,0x10000)]+[(a,0x10000) for a in pages]:
 
@@ -1647,7 +1647,7 @@ for team in [0,1]:
   for readiness in [0,1,0x100,0x101]:
    practice_scope();i(D,0);i(D+12368,1);i(D+12372,1);i(D+12384,0)
    i(D+12448,0);i(D+24,142);i(D+28,0);i(states+0xa0,phase);c.c_ubyte.from_address(pause).value=0
-   i(manager+0x50c,readiness);i(match+0x1c8,team);i(D+12048,0)
+   i(manager+0x50c,readiness|0x5a6b0000);i(match+0x1c8,team);i(D+12048,0)
    i(initial_state+0x10,0);i(D+44,1);f(D+36,-15);f(D+48,-5);i(D+84,0)
    ui_calls.clear();native_ui_calls.clear();transition_calls.clear();cpu_calls.clear()
    put(M,bytes.fromhex('4883ec28')+imm('48b8',restore_address)+bytes.fromhex('ffd04883c428c3'))
@@ -1659,6 +1659,7 @@ for team in [0,1]:
    i(initial_state+0x10,2);c.WINFUNCTYPE(None)(M)()
    assert native_ui_calls==[(B+0xdadd380,0)] and not ui_calls and not cpu_calls
    assert transition_calls==[(states,5)] and get(states+0xa0)==5
+   assert get(manager+0x50c)==0x5a6b0000 # only the two stale readiness bytes are cleared
    assert get(D+28)==142 and get(D+12384)==1 and get(D+12448)==0
    c.WINFUNCTYPE(None)(M)()
    assert native_ui_calls==[(B+0xdadd380,0)] and get(D+12384)==1
@@ -1755,6 +1756,82 @@ for team in [0,1,0,1]:
  assert c.c_uint64.from_address(D+12392).value==refresh_high
  assert get(D+12016)==0 and ui_calls==[(B+0xdadd380,0)] and not cpu_calls
  checks+=1
+
+# Defensive users must see the CPU's actual offensive personnel before making
+# their pick. Commit only that offense, once, after native initialization. A
+# changed controller binding, possession, selection, or menu transaction cancels
+# the payload rather than selecting a play for the human.
+bindings=M+0xd000;early_entry=M+0xe000
+put(early_entry,Path('Evidence/EarlyOffense.bin').read_bytes())
+assert len(Path('Evidence/EarlyOffense.bin').read_bytes())<=2048
+put(M+0x100,Path('Evidence/InitialPlayCallTick.bin').read_bytes())
+early_calls=[];personnel_calls=[];personnel_resets=[]
+ResetPersonnel=c.WINFUNCTYPE(None,c.c_void_p)
+def reset_personnel(this):
+ assert len(early_calls)==1
+ personnel_resets.append(this)
+reset_personnel_mock=ResetPersonnel(reset_personnel)
+put(B+0x7b84950,jump(c.cast(reset_personnel_mock,c.c_void_p).value))
+def show_personnel(this,seconds):
+ assert len(early_calls)==1 and (get(service+0x28)&12)==4 and personnel_resets==[B+0xdadefe0]
+ personnel_calls.append((this,seconds))
+personnel_mock=UiShow(show_personnel)
+put(B+0x7b848a0,jump(c.cast(personnel_mock,c.c_void_p).value))
+def commit_early_offense(this,team):
+ assert get(manager+0x50c)==0 and (get(service+0x28)&12)==0
+ early_calls.append((this,team))
+ c.c_ubyte.from_address(manager+0x50c+team).value=1
+ i(service+0x28,get(service+0x28)|4);i(D+200,0)
+early_mock=CpuChooser(commit_early_offense)
+q(D+12000,c.cast(early_mock,c.c_void_p).value)
+faults=[None,'enabled','mode','kind','match','practice','unknown','user','owner','possession','target','type','binding_null','binding_replaced','binding_vtable','binding0','binding1','offense_ready','defense_ready','both_ready','manager_ready','manager_null','service_null','entry_pending','ui_pending','scenario','handled','phase','stage','state','selection']
+for user in [0,1]:
+ for fault in faults:
+  practice_scope(fault if fault in ['enabled','mode','kind','match','practice'] else None)
+  q(B+0xfa582a0,manager);q(B+0xf8abb50,service);q(B+0xf857018,bindings);q(bindings,B+0xb324050)
+  put(bindings+0x148,struct.pack('<ii',0,0) if user==0 else struct.pack('<ii',-1,255))
+  put(bindings+0x174,struct.pack('<ii',0,1) if user==1 else struct.pack('<ii',-1,255))
+  q(D+12472,bindings);put(D+12480,c.string_at(bindings+0x148,8));put(D+12488,c.string_at(bindings+0x174,8))
+  q(D+12456,early_entry);q(D+12376,0);i(D+12464,0);i(D+12496,0);i(D+12500,0);i(D+12372,0);i(D+12448,0)
+  i(D+4,0);i(D+180,0);i(D+184,0);i(D+200,2);i(D+168,user);i(D+204,user);i(D+220,1);i(D+12012,1)
+  i(D+12028,1-user);i(match+0x1c8,1-user);i(manager+0x50c,0);i(service+0x28,17)
+  i(states+0xa0,5);i(initial_state+0x10,2)
+  selection=struct.pack('<5i',-1,-1,-1,-1,-1);put(service+0x70+user*36,selection);put(D+228,selection)
+  early_calls.clear();personnel_calls.clear();personnel_resets.clear()
+  if fault=='unknown':i(D+12012,0)
+  elif fault=='user':i(D+168,2)
+  elif fault=='owner':i(D+204,1-user)
+  elif fault=='possession':i(match+0x1c8,user)
+  elif fault=='target':i(D+12028,user)
+  elif fault=='type':i(D+220,11)
+  elif fault=='binding_null':q(B+0xf857018,0)
+  elif fault=='binding_replaced':q(D+12472,bindings+0x400)
+  elif fault=='binding_vtable':q(bindings,B+0xb324058)
+  elif fault=='binding0':i(bindings+0x148,7)
+  elif fault=='binding1':i(bindings+0x174,7)
+  elif fault in ['offense_ready','defense_ready','both_ready']:i(service+0x28,17|{'offense_ready':4,'defense_ready':8,'both_ready':12}[fault])
+  elif fault=='manager_ready':i(manager+0x50c,0x101)
+  elif fault=='manager_null':q(B+0xfa582a0,0)
+  elif fault=='service_null':q(B+0xf8abb50,0)
+  elif fault=='entry_pending':i(D+12372,2)
+  elif fault=='ui_pending':i(D+12448,2)
+  elif fault=='scenario':i(D+4,1)
+  elif fault=='handled':i(D+180,1)
+  elif fault=='phase':i(states+0xa0,1)
+  elif fault=='stage':i(initial_state+0x10,1)
+  elif fault=='selection':i(service+0x70+user*36,11)
+  arg=initial_state+0x400 if fault=='state' else initial_state
+  put(M,bytes.fromhex('4883ec28')+imm('48b9',arg)+imm('48b8',M+0x100)+bytes.fromhex('ffd04883c428c3'))
+  c.WINFUNCTYPE(None)(M)()
+  assert early_calls==([(manager,1-user)] if fault is None else []),(user,fault,early_calls)
+  assert get(D+12464)==int(fault is None) and get(D+184)==int(fault is None)
+  assert get(D+12496)==int(fault is None) and get(D+12500)==int(fault is None)
+  assert personnel_calls==([(B+0xdadefe0,0)] if fault is None else [])
+  assert personnel_resets==([B+0xdadefe0] if fault is None else [])
+  if fault is None:
+   assert c.c_ubyte.from_address(manager+0x50c+user).value==0 and get(D+180)==1
+   c.WINFUNCTYPE(None)(M)();assert early_calls==[(manager,1-user)]
+  checks+=1
 
 print('PASS: %d native hook execution checks (no game access)'%checks)
 

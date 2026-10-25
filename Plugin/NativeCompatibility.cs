@@ -21,6 +21,10 @@ namespace SituationalPractice
         // only those instructions; retain every surrounding byte and all of
         // our hook entry checks. Gameplay hooks are unchanged.
         internal static readonly Region[] Regions={
+            new Region(0x7b84950, 48, "395a20fe9c29bfd9d88f86e1ac4b957d9b1135c5fddb2c543c09b187422e26dd"),
+            new Region(0x7b7fb10, 40, "83d0b35ff29d488d4dba4324f735f2abbdf5f25d711aeaadd062d122fff833ed"),
+            new Region(0x2ec2850, 393, "934b4e164f805782b233dbfc716363e28d29d8261f47a936f4a7c00b3abf1f1d"),
+            new Region(0x7b848a0, 161, "63649bab281774fd97856be5b170c8c12f32a745e7cbb6d38ad375b18bb1d841"),
             new Region(0x35bfd70, 514, "9bcceac5bdf0299a678000a45bff93c5cc31b42d5b73f1458c0a79af609cccde"),
             new Region(0x5fde170, 232, "8d7ee05083a27cb5c0bd9102869e26743136ac4b614a8f5fb53b33db0454e94d"),
             new Region(0x2ad8410, 5, "22bdee30f3c1dd6de8568705cde8f9633bc6c8172fa06df18a8a27833dccb072"),

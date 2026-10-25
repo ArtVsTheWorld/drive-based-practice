@@ -8,6 +8,13 @@ class OpponentChecks
     static void Main()
     {
         int team;
+        Check(PracticeSide.TryBoundUserTeam(0,0,-1,255,out team) && team==0,"Home local controller");
+        Check(PracticeSide.TryBoundUserTeam(-1,255,0,1,out team) && team==1,"Away local controller");
+        foreach(int controller in new[]{-1,8,255})Check(!PracticeSide.TryBoundUserTeam(controller,0,-1,255,out team),"Invalid controller binding");
+        Check(!PracticeSide.TryBoundUserTeam(0,0,1,1,out team),"Two local sides must not be auto-selected");
+        Check(!PracticeSide.TryBoundUserTeam(-1,255,-1,255,out team),"Unbound sides");
+        Check(!PracticeSide.TryBoundUserTeam(0,1,-1,255,out team),"Binding side mismatch");
+        Check(!PracticeSide.TryBoundUserTeam(8,0,0,1,out team),"Invalid opposite binding must not resolve a user");
         foreach(int possession in new[]{0,1}){
             Check(PracticeSide.TryUserTeam(possession,5,out team) && team==possession,"Offensive user");
             Check(PracticeSide.TryUserTeam(possession,9,out team) && team==1-possession,"Defensive user");
