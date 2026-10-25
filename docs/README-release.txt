@@ -1,4 +1,4 @@
-DRIVE-BASED PRACTICE 0.8.16 BETA
+DRIVE-BASED PRACTICE 0.8.17 BETA
 By Ace
 
 Put SituationalPractice.dll in MMC Mod Manager's Plugins folder. Restart MMC

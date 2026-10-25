@@ -47,7 +47,7 @@ no game clock, and kicking sequences are not supported. Logs and reports are in
 
 ## Source
 
-Current version: **0.8.16 beta**. Fourth-down line visibility, mode
+Current version: **0.8.17 beta**. Fourth-down line visibility, mode
 changes and the offensive-personnel display are being tested.
 
 [Build and test](docs/building.md) | [Updating after an EA patch](docs/updating.md)

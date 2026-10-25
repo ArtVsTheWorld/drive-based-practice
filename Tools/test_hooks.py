@@ -1781,10 +1781,12 @@ def commit_early_offense(this,team):
  assert get(manager+0x50c)==0 and (get(service+0x28)&12)==0
  early_calls.append((this,team))
  c.c_ubyte.from_address(manager+0x50c+team).value=1
- i(service+0x28,get(service+0x28)|4);i(D+200,0)
+ # Native submission copies PlayData now and posts readiness messages for later.
+ keys=[get(D+220),get(D+208),get(D+212),get(D+216),-1]
+ put(service+0x70+team*36,struct.pack("<5i",*keys));i(D+200,0)
 early_mock=CpuChooser(commit_early_offense)
 q(D+12000,c.cast(early_mock,c.c_void_p).value)
-faults=[None,'enabled','mode','kind','match','practice','unknown','user','owner','possession','target','type','binding_null','binding_replaced','binding_vtable','binding0','binding1','offense_ready','defense_ready','both_ready','manager_ready','manager_null','service_null','entry_pending','ui_pending','scenario','handled','phase','stage','state','selection']
+faults=[None,'enabled','mode','kind','match','practice','unknown','user','owner','possession','target','type','binding_null','binding_replaced','binding_vtable','binding0','binding1','offense_ready','defense_ready','both_ready','manager_ready','manager_null','service_null','entry_pending','ui_pending','scenario','handled','phase','stage','state','selection','manual','manual_possession','manual_wrongtag']
 for user in [0,1]:
  for fault in faults:
   practice_scope(fault if fault in ['enabled','mode','kind','match','practice'] else None)
@@ -1792,8 +1794,8 @@ for user in [0,1]:
   put(bindings+0x148,struct.pack('<ii',0,0) if user==0 else struct.pack('<ii',-1,255))
   put(bindings+0x174,struct.pack('<ii',0,1) if user==1 else struct.pack('<ii',-1,255))
   q(D+12472,bindings);put(D+12480,c.string_at(bindings+0x148,8));put(D+12488,c.string_at(bindings+0x174,8))
-  q(D+12456,early_entry);q(D+12376,0);i(D+12464,0);i(D+12496,0);i(D+12500,0);i(D+12372,0);i(D+12448,0)
-  i(D+4,0);i(D+180,0);i(D+184,0);i(D+200,2);i(D+168,user);i(D+204,user);i(D+220,1);i(D+12012,1)
+  q(D+12456,early_entry);q(D+12376,0);i(D+12464,0);i(D+12496,0);i(D+12500,0);i(D+12504,0);i(D+12372,0);i(D+12448,0)
+  i(D+4,0);i(D+252,0);i(D+12048,0);i(D+180,0);i(D+184,0);i(D+200,2);i(D+168,user);i(D+204,user);i(D+220,1);i(D+12012,1)
   i(D+12028,1-user);i(match+0x1c8,1-user);i(manager+0x50c,0);i(service+0x28,17)
   i(states+0xa0,5);i(initial_state+0x10,2)
   selection=struct.pack('<5i',-1,-1,-1,-1,-1);put(service+0x70+user*36,selection);put(D+228,selection)
@@ -1816,6 +1818,8 @@ for user in [0,1]:
   elif fault=='entry_pending':i(D+12372,2)
   elif fault=='ui_pending':i(D+12448,2)
   elif fault=='scenario':i(D+4,1)
+  elif fault in ['manual','manual_possession','manual_wrongtag']:
+   i(D+4,1);i(D+252,1 if fault!='manual_wrongtag' else 2);i(D+12048,int(fault=='manual_possession'))
   elif fault=='handled':i(D+180,1)
   elif fault=='phase':i(states+0xa0,1)
   elif fault=='stage':i(initial_state+0x10,1)
@@ -1823,14 +1827,55 @@ for user in [0,1]:
   arg=initial_state+0x400 if fault=='state' else initial_state
   put(M,bytes.fromhex('4883ec28')+imm('48b9',arg)+imm('48b8',M+0x100)+bytes.fromhex('ffd04883c428c3'))
   c.WINFUNCTYPE(None)(M)()
-  assert early_calls==([(manager,1-user)] if fault is None else []),(user,fault,early_calls)
-  assert get(D+12464)==int(fault is None) and get(D+184)==int(fault is None)
-  assert get(D+12496)==int(fault is None) and get(D+12500)==int(fault is None)
-  assert personnel_calls==([(B+0xdadefe0,0)] if fault is None else [])
-  assert personnel_resets==([B+0xdadefe0] if fault is None else [])
-  if fault is None:
+  active=fault in [None,'manual']
+  assert early_calls==([(manager,1-user)] if active else []),(user,fault,early_calls)
+  assert get(D+12464)==int(active) and get(D+184)==int(active)
+  assert get(D+12496)==0 and get(D+12500)==int(active) and not personnel_calls and not personnel_resets
+  if active:
    assert c.c_ubyte.from_address(manager+0x50c+user).value==0 and get(D+180)==1
-   c.WINFUNCTYPE(None)(M)();assert early_calls==[(manager,1-user)]
+   assert get(D+12504)==1
+   for tick in range(3):
+    c.WINFUNCTYPE(None)(M)()
+    assert early_calls==[(manager,1-user)] and not personnel_calls and get(D+12504)==1
+   # The later native acknowledgement is what makes personnel safe to query.
+   i(service+0x28,21);c.WINFUNCTYPE(None)(M)()
+   assert personnel_calls==[(B+0xdadefe0,0)] and personnel_resets==[B+0xdadefe0]
+   assert get(D+12496)==1 and get(D+12504)==0
+   c.WINFUNCTYPE(None)(M)()
+   assert early_calls==[(manager,1-user)] and len(personnel_calls)==1
+   assert get(D+4)==int(fault=='manual') and get(D+252)==int(fault=='manual')
+  checks+=1
+
+# A delayed widget update must never expose stale personnel or interfere with
+# the user's choice after a formation, possession, controller or mode change.
+for user in [0,1]:
+ for fault in [None,'pending_ack','human_chosen','both_chosen','human_ready','cpu_not_ready','formation','set','play','type','controller','possession','mode_entry']:
+  practice_scope();i(states+0xa0,5);i(initial_state+0x10,2)
+  q(B+0xfa582a0,manager);q(B+0xf8abb50,service);q(B+0xf857018,bindings);q(bindings,B+0xb324050)
+  put(bindings+0x148,struct.pack('<ii',0,0) if user==0 else struct.pack('<ii',-1,255))
+  put(bindings+0x174,struct.pack('<ii',0,1) if user==1 else struct.pack('<ii',-1,255))
+  q(D+12472,bindings);put(D+12480,c.string_at(bindings+0x148,8));put(D+12488,c.string_at(bindings+0x174,8))
+  q(D+12456,early_entry);q(D+12376,0);i(D+12496,0);i(D+12500,1);i(D+12504,1);i(D+12372,0);i(D+12448,0)
+  i(D+4,0);i(D+180,1);i(D+200,0);i(D+168,user);i(D+204,user);i(D+12012,1);i(D+12028,1-user);i(match+0x1c8,1-user)
+  i(manager+0x50c,1 if user==1 else 0x100);i(service+0x28,21)
+  for off,value in [(208,3),(212,4),(216,5),(220,1)]:i(D+off,value)
+  put(service+0x70+(1-user)*36,struct.pack('<5i',1,3,4,5,-1))
+  early_calls[:]=[(manager,1-user)];personnel_calls.clear();personnel_resets.clear()
+  if fault=='pending_ack':i(service+0x28,17)
+  elif fault=='human_chosen':i(service+0x28,25)
+  elif fault=='both_chosen':i(service+0x28,29)
+  elif fault=='human_ready':i(manager+0x50c,0x101)
+  elif fault=='cpu_not_ready':i(manager+0x50c,0)
+  elif fault in ['type','formation','set','play']:i(service+0x70+(1-user)*36+{'type':0,'formation':4,'set':8,'play':12}[fault],999)
+  elif fault=='controller':i(bindings+0x148,7)
+  elif fault=='possession':i(match+0x1c8,user)
+  elif fault=='mode_entry':i(D+12372,2)
+  put(M,bytes.fromhex('4883ec28')+imm('48b9',initial_state)+imm('48b8',M+0x100)+bytes.fromhex('ffd04883c428c3'))
+  c.WINFUNCTYPE(None)(M)()
+  assert early_calls==[(manager,1-user)]
+  assert personnel_calls==([(B+0xdadefe0,0)] if fault is None else []),(user,fault)
+  assert get(D+12496)==int(fault is None)
+  assert get(D+12504)==int(fault=='pending_ack')
   checks+=1
 
 print('PASS: %d native hook execution checks (no game access)'%checks)

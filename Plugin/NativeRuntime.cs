@@ -71,7 +71,7 @@ namespace SituationalPractice
             text.AppendLine("mode_menu_enabled="+Int(data+12368)+" mode_entry_pending="+Int(data+12372)+" mode_entries_applied="+Int(data+12384)+" mode_ui_pending="+Int(data+12448));
             long pause=Long(image+0xf547a00);text.AppendLine("native_pause="+(pause==0?"none":Read(pause,1)[0].ToString())+" refresh_entry=0x"+Long(data+RefreshEntryOffset).ToString("x"));
             text.AppendLine("drive_start_command="+Int(data+12444)+" drive_start_completed="+Int(data+12440));
-            text.AppendLine("early_cpu_offense_choices="+Int(data+12464)+" personnel_notifications="+Int(data+12496)+" offense_preselected="+Int(data+12500));
+            text.AppendLine("early_cpu_offense_choices="+Int(data+12464)+" personnel_notifications="+Int(data+12496)+" offense_preselected="+Int(data+12500)+" personnel_pending="+Int(data+12504));
             text.AppendLine("first_down_line="+(firstDownLine==null?"inactive":firstDownLine.State));
             text.AppendLine("match=0x"+snap.Match.ToString("x")+" states=0x"+snap.States.ToString("x")+" controller=0x"+BitConverter.ToInt64(block,8).ToString("x"));
             text.AppendLine("phase="+snap.Phase+" possession="+snap.Possession+" down="+snap.NativeDown+" ball="+snap.Ball.ToString("R",CultureInfo.InvariantCulture)+" line="+snap.Line.ToString("R",CultureInfo.InvariantCulture)+" gain="+snap.Gain.ToString("R",CultureInfo.InvariantCulture)+" score="+snap.OffenseScore+":"+snap.DefenseScore);
@@ -252,6 +252,7 @@ namespace SituationalPractice
             Write(data+164,BitConverter.GetBytes(openPlayCall?1:0));
             Write(data+200,BitConverter.GetBytes(0));
             Write(data+12500,BitConverter.GetBytes(0));
+            Write(data+12504,BitConverter.GetBytes(0));
             Write(data+16,BitConverter.GetBytes(snap.Match));
             Write(data+32,BitConverter.GetBytes(vector==null?0f:vector[0])); Write(data+36,BitConverter.GetBytes((float)scenario.Ball-50)); Write(data+40,BitConverter.GetBytes(vector==null?0f:vector[2]));
             Write(data+44,BitConverter.GetBytes(scenario.Down)); Write(data+48,BitConverter.GetBytes((float)(scenario.Ball-50+scenario.Distance)));
@@ -352,7 +353,7 @@ namespace SituationalPractice
         public void UseDefaultPractice(bool restoreSelection)
         {
             SetEnabled(false);
-            foreach(int offset in new[]{4,84,164,180,192,200,252,12012,12016,12048,12372,12448,12500})Write(data+offset,BitConverter.GetBytes(0));
+            foreach(int offset in new[]{4,84,164,180,192,200,252,12012,12016,12048,12372,12448,12500,12504})Write(data+offset,BitConverter.GetBytes(0));
             RequestNativeHud(false);
             if(restoreSelection){
                 var vector=SavedPracticeSpot();var spot=NativeDrivePolicy.StartingSpot(new NativeSnapshot{Ball=vector[1]+50},false);
@@ -418,10 +419,12 @@ namespace SituationalPractice
             int flags=Int(service+0x28),user;
             if(Int(data+180)!=0){
                 if(Int(data+12500)!=1 || UserTeam<0 || UserTeam>1 || UserTeam==snap.Possession)return;
-                if(Read(manager+0x50c+snap.Possession,1)[0]!=0 && (flags&4)!=0)return;
+                // Submission queues native messages; its readiness flags can
+                // arrive later. A missing flag alone is not a cleared call.
+                if(Read(manager+0x50c+snap.Possession,1)[0]!=0)return;
                 // A UI opening can finish after native stage 2 and clear an
                 // early registration. Retry through the same validated path.
-                Write(data+12500,BitConverter.GetBytes(0));Write(data+180,BitConverter.GetBytes(0));
+                Write(data+12500,BitConverter.GetBytes(0));Write(data+12504,BitConverter.GetBytes(0));Write(data+180,BitConverter.GetBytes(0));
                 log("CPU offense registration cleared during picker startup; preparing the current selection again.");
             }
             long bindings=Long(image+0xf857018);byte[] first=null,second=null;
@@ -430,8 +433,12 @@ namespace SituationalPractice
                 first=Read(bindings+0x148,8);second=Read(bindings+0x174,8);
                 PracticeSide.TryBoundUserTeam(BitConverter.ToInt32(first,0),BitConverter.ToInt32(first,4),BitConverter.ToInt32(second,0),BitConverter.ToInt32(second,4),out boundUser);
             }
+            // Flip Sides can leave its drive spot queued while phase 5 waits
+            // for choices. Pick only the CPU offense here; keep that spot
+            // command pending for the established preplay placement path.
+            bool spotReady=Int(data+4)==0 || Int(data+4)==1 && Int(data+252)==1 && Int(data+12048)==0;
             bool early=(flags&12)==0 && boundUser>=0 && boundUser!=snap.Possession && Read(manager+0x50c,2)[0]==0 && Read(manager+0x50d,1)[0]==0
-                && Int(data+12372)==0 && Int(data+12448)==0 && Int(data+4)==0;
+                && Int(data+12372)==0 && Int(data+12448)==0 && spotReady;
             if(early)user=boundUser;
             else if(!PracticeSide.TryUserTeam(snap.Possession,flags,Int(data+12012)!=0?UserTeam:-1,out user))return;
             bool userOffense=user==snap.Possession;
@@ -642,14 +649,15 @@ namespace SituationalPractice
                 // state independently of our end-of-play queue. Each native
                 // initialization must start a fresh one-shot CPU request.
                 b.H("83791001");b.J("0f87","selection");
-                b.H("41c782b40000000000000041c782c80000000000000041c782a40000000000000041c782");b.I(12500);b.I(0);b.J("e9","native");
+                b.H("41c782b40000000000000041c782c80000000000000041c782a40000000000000049c782");b.I(12500);b.I(0);b.J("e9","native");
                 b.Label("selection");b.H("83791002");b.J("0f85","native");
                 b.H("4183ba");b.I(12016);b.H("01");b.J("0f85","registered");
                 b.H("4883ec20498b82");b.I(RefreshEntryOffset);b.H("ffd04883c420");b.J("e9","native");
                 b.Label("registered");
-                b.H("4183bac800000002");b.J("0f85","normalCommit");
-                b.H("4983ba");b.I(EarlyOffenseEntryOffset);b.H("00");b.J("0f84","native");
-                b.H("4883ec20498b82");b.I(EarlyOffenseEntryOffset);b.H("ffd04883c420");b.J("e9","native");
+                // Also service a pending personnel notification on later
+                // ticks, after native submission messages acknowledge offense.
+                b.H("4983ba");b.I(EarlyOffenseEntryOffset);b.H("00");b.J("0f84","normalCommit");
+                b.H("4883ec20498b82");b.I(EarlyOffenseEntryOffset);b.H("ffd04883c420");
                 b.Label("normalCommit");
                 b.H("4183bab400000000");b.J("0f85","native");
             }
@@ -712,9 +720,15 @@ namespace SituationalPractice
         public static byte[] BuildEarlyOffense(long image,long data)
         {
             var b=StatsScope(image,data);
-            SaveCallRegisters(b);
-            b.H("4183bac800000002");b.J("0f85","finish");
-            foreach(int offset in new[]{4,180,12372,12448}){b.H("4183ba");b.I(offset);b.H("00");b.J("0f85","stale");}
+            b.H("4183bac800000002");b.J("0f84","active");
+            b.H("4183ba");b.I(12504);b.H("01");b.J("0f85","native");
+            b.Label("active");SaveCallRegisters(b);
+            foreach(int offset in new[]{12372,12448}){b.H("4183ba");b.I(offset);b.H("00");b.J("0f85","stale");}
+            b.H("41837a0400");b.J("0f84","spotReady");
+            b.H("41837a0401");b.J("0f85","stale");
+            b.H("4183bafc00000001");b.J("0f85","stale");
+            b.H("4183ba");b.I(12048);b.H("00");b.J("0f85","stale");
+            b.Label("spotReady");
             b.H("4183ba");b.I(12012);b.H("01");b.J("0f85","stale");
             b.H("48b8");b.Q(image+0xf8575a0);b.H("488b004885c0");b.J("0f84","stale");
             b.H("83b8a000000005");b.J("0f85","stale");
@@ -730,27 +744,38 @@ namespace SituationalPractice
             foreach(var pair in new[]{new[]{0x148,12480},new[]{0x174,12488}}){
                 b.H("488b90");b.I(pair[0]);b.H("493b92");b.I(pair[1]);b.J("0f85","stale");
             }
+            b.H("48b8");b.Q(image+0xfa582a0);b.H("488b004885c0");b.J("0f84","stale");
+            b.H("4989c3"); // R11 = the current native play manager.
             b.H("48b8");b.Q(image+0xf8abb50);b.H("488b004885c0");b.J("0f84","stale");
+            b.H("4183bac800000002");b.J("0f85","notify");
+            b.H("4183bab400000000");b.J("0f85","stale");
             b.H("8b502883e20c");b.J("0f85","stale");
-            // Reject a user selection or possession change that arrived after
-            // the helper published the offensive call. It will be re-evaluated.
+            // Reject a user choice that arrived after payload publication.
             b.H("418b92a8000000486bd224488d441070");
             for(int x=0;x<5;x++){b.H("8b50");b.B((byte)(x*4));b.H("413b92");b.I(228+x*4);b.J("0f85","stale");}
-            b.H("48b8");b.Q(image+0xfa582a0);b.H("488b004885c0");b.J("0f84","stale");
-            b.H("6683b80c05000000");b.J("0f85","stale");
-            b.H("41c782b400000001000000488bc8ba01000000412b92a8000000");
+            b.H("664183bb0c05000000");b.J("0f85","stale");
+            b.H("41c782b400000001000000498bcbba01000000412b92a8000000");
             b.H("498b82e02e0000ffd049ba");b.Q(data);
-            b.H("41c782");b.I(12500);b.I(1);b.H("f041ff82b8000000f041ff82");b.I(12464);
-            // The personnel widget is refreshed by this native notification.
-            // Zero is an untimed display update, not a gameplay countdown:
-            // this action only posts UI data and changes no clock setting.
-            b.H("48b8");b.Q(image+0xf8abb50);b.H("488b008b402883e00c83f804");b.J("0f85","finish");
-            // Clear the previous display value so successive untimed updates
-            // still refresh personnel when the CPU chooses another formation.
+            b.H("41c782");b.I(12500);b.I(1);b.H("41c782");b.I(12504);b.I(1);
+            b.H("f041ff82b8000000f041ff82");b.I(12464);b.J("e9","finish");
+            b.Label("notify");
+            b.H("4183ba");b.I(12500);b.H("01");b.J("0f85","stale");
+            b.H("4183bab400000001");b.J("0f85","stale");
+            b.H("8b502883e20c85d2");b.J("0f84","finish"); // Native messages still pending.
+            b.H("83fa04");b.J("0f85","stale"); // Human has chosen, or the side changed.
+            b.H("418b92a80000004180bc130c05000000");b.J("0f85","stale");
+            b.H("83f2014180bc130c05000001");b.J("0f85","stale");
+            b.H("486bd224488d441070"); // Service PlayData for the actual CPU offense.
+            foreach(var pair in new[]{new[]{0,220},new[]{4,208},new[]{8,212},new[]{12,216}}){
+                b.H("8b50");b.B((byte)pair[0]);b.H("413b92");b.I(pair[1]);b.J("0f85","stale");
+            }
+            // These actions post UI data only. Reset the previous widget value
+            // then supply an untimed refresh after the real offense is ready.
+            b.H("41c782");b.I(12504);b.I(0);
             b.H("48b9");b.Q(image+0xdadefe0);b.H("48b8");b.Q(image+0x7b84950);b.H("ffd0");
             b.H("48b9");b.Q(image+0xdadefe0);b.H("33d248b8");b.Q(image+0x7b848a0);b.H("ffd049ba");b.Q(data);
             b.H("f041ff82");b.I(12496);b.J("e9","finish");
-            b.Label("stale");b.H("41c782c800000000000000");
+            b.Label("stale");b.H("41c782c80000000000000041c782");b.I(12504);b.I(0);
             b.Label("finish");RestoreCallRegisters(b);
             b.Label("native");b.H("415a589dc3");return b.Finish();
         }

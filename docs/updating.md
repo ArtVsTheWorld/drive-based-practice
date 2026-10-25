@@ -107,11 +107,21 @@ empty manager readiness, and pending mode commands before registering only the C
 offense. Its pointer is at data+12456; never overlap the first-snap snapshot. Code
 allocation is 24576 bytes, with 2048 reserved for this helper.
 
-The normal native registration updates the actual formation/package. Refresh the
-native personnel widget with DefPlaycallTimerEnded (0x7b84950), then
+The normal native registration copies PlayData immediately and queues native
+acknowledgement messages; it does not set service readiness bits synchronously.
+Keep the personnel request at data+12504 until a later stage-2 tick sees offense
+readiness 4, CPU manager readiness 1 and human readiness 0, with the same actual
+formation/set/play/type. Never treat a delayed service bit as a cleared selection.
+Refresh the native personnel widget with DefPlaycallTimerEnded (0x7b84950), then
 DefPlaycallTimerStarted (0x7b848a0, zero/untimed). These functions only post UI data;
-they do not start a gameplay clock. Resetting its value avoids stale personnel
+they do not start a gameplay clock. The native DefensePlayClock art class has an
+untimed layout that hides the digits while retaining formation and personnel; zero
+uses that layout. Resetting its value avoids stale personnel
 on successive untimed calls. Diagnostics count early offense and widget updates.
-If asynchronous UI initialization clears a submitted offense, clear the early
-latch and retry against the latest bindings and service flags. Never auto-select
+If asynchronous UI initialization clears the CPU manager readiness byte, clear
+the early latch and pending notification, then retry against the latest bindings
+and service flags. A missing service acknowledgement alone must not reroll offense.
+Flip Sides can leave the placement command queued while selection is open. Allow
+early offense for pending=1/manual=1 with no pending possession change; leave the
+spot command untouched so its existing preplay path still applies it. Never auto-select
 a human defense, commit twice, or retain a payload after a side/possession change.
