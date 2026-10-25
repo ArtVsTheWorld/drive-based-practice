@@ -1,4 +1,4 @@
-DRIVE-BASED PRACTICE 0.8.9 BETA
+DRIVE-BASED PRACTICE 0.8.11 BETA
 By Ace
 
 Put SituationalPractice.dll in MMC Mod Manager's Plugins folder. Restart MMC
@@ -22,6 +22,7 @@ In the drive modes, Flip Sides resets the drive and keeps scores/stats. Re-spot
 Ball starts a new drive at the selected location. Changing modes clears scores
 and stats. Returning to Default Practice restores the usual practice play picker.
 
-No timed games, yellow first-down line, or kicking sequences in this beta.
+The yellow first-down line is enabled in Drive Practice and Scrimmage.
+No timed games or kicking sequences in this beta.
 Logs and crash reports are under Plugins/SituationalPractice.
-The new mode transitions passed local checks; in-game testing is still needed.
+Mode switching is confirmed working. The first-down line is still in testing.

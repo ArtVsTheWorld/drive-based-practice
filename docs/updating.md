@@ -53,12 +53,26 @@ turnovers/returns, mode changes and Stats. Returning to default practice must
 restore the native HUD flags and two-sided picker; entering a custom mode must
 rebuild its picker once, with no cached selection or penalty loop. Native mode
 entry is applied at the safe preplay or play-selection update on the game thread.
+Mode entry must wait for play-selection initialization stage 2 before opening
+the picker; stages 0 and 1 can clear choices made too early. The pending UI
+request lives at offset 12448. The 64-bit refresh-helper address at 12392 must
+never overlap the 32-bit opponent-possession tag at 12028. Test calls through
+the full refresh address with both possession tags, including an address above 4 GB.
 The mode-entry thunk captures the pre-snap situation and completion counter in
 the shared block at offset 12400. It publishes the applied command only after
 opening the picker. Keep that order: the worker must retain a first result that
 finishes before it observes the acknowledgement. Attach/recovery must also use
 the safe pre-snap entry, rather than waiting for an end-of-play reset.
-The yellow first-down line and kicking sequences are still unsupported.
+`NativeFirstDownLine` uses the practice FieldLineProcessor visibility override
+at +0x61. Resolve it through `[image+0xf8abf80]+0xea28`, check the practice vtable
+at 0xb474928 and first-down color enum 26 at +0x20. Practice deliberately skips
+the normal first-down display check in 0x35bfd70; +0x61 enables the native line.
+The game clears the override during play transitions, so maintain it while a
+custom drive is active. Restore only the currently owned processor when leaving
+the mode; never write a saved pointer after the processor changes. Goal-to-go
+must retain the painted goal line without an extra yellow line. Test re-entry,
+mode changes, both possession directions, first downs, losses and re-spotting.
+Kicking sequences are still unsupported.
 
 Call Sheet compatibility excludes only the five-byte calls at `0x35ff6ef` and
 `0x7b7e964` in the current layout. The surrounding code and owned hook sites remain

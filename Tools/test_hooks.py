@@ -1104,7 +1104,7 @@ assert len(Path('Evidence/PlayCallRefresh.bin').read_bytes())<=512
 
 put(M+0x100,Path('Evidence/InitialPlayCallTick.bin').read_bytes())
 
-put(M+0x1000,Path('Evidence/PlayCallRefresh.bin').read_bytes());q(D+12024,M+0x1000)
+put(M+0x1000,Path('Evidence/PlayCallRefresh.bin').read_bytes());q(D+12392,M+0x1000)
 
 put(B+0x7babb30,imm('48b8',saved+0x200)+bytes.fromhex('4889088950084889e14883e10f89480c')+clobber+b'\xc3')
 
@@ -1531,7 +1531,7 @@ for request in [0,1,2,3]:
    for phase in [1,3,4,5,6]:
     for paused in [0,1]:
      practice_scope(disabled);i(D,enabled);i(D+12368,0 if disabled=='menus' else 1)
-     i(D+12372,request);i(D+12384,0);i(states+0xa0,phase);c.c_ubyte.from_address(pause).value=paused
+     i(D+12372,request);i(D+12384,0);i(D+12448,0);i(initial_state+0x10,0);i(states+0xa0,phase);c.c_ubyte.from_address(pause).value=paused
      i(D+4,1);i(D+252,1);i(D+164,1);i(D+200,1);i(D+24,119);i(D+28,0)
      i(D+12048,1 if request==2 else 0);i(D+12052,0);i(match+0x1c8,0);i(match+0x1cc,1)
      i(D+44,1);f(D+32,3);f(D+36,-15);f(D+40,2);f(D+48,-5)
@@ -1542,10 +1542,10 @@ for request in [0,1,2,3]:
      c.WINFUNCTYPE(None)(M)()
      scope=disabled is None or disabled=='menus' and enabled==1
      active=scope and request in [1,2] and enabled==request-1 and phase in [1,5] and not paused
-     assert get(D+12384)==int(active),(request,enabled,disabled,phase,paused)
+     assert get(D+12384)==0,(request,enabled,disabled,phase,paused)
      assert get(D+12372)==(0 if active else request)
      assert get(D+4)==get(D+252)==get(D+164)==get(D+200)==int(not active)
-     assert get(D+28)==(119 if active else 0)
+     assert get(D+28)==0
      if active:
       assert c.c_uint64.from_address(D+12400).value==match and c.c_uint64.from_address(D+12408).value==states
       assert get(D+12416)==0 and get(D+12420)==1
@@ -1559,9 +1559,19 @@ for request in [0,1,2,3]:
      assert get(match+0x1d8)==(0 if active else 6) and get(match+0x1dc)==(0 if active else 4)
      assert get(ui+0x20)==(20 if active else -1)
      assert transition_calls==([(states,5)] if active else [])
-     assert native_ui_calls==([(B+0xdadd380,0)] if active and request==1 else [])
-     assert ui_calls==([(B+0xdadd380,0)] if active and request==2 else [])
+     assert not native_ui_calls and not ui_calls
      assert not cpu_calls and get(D)==enabled
+     assert get(D+12448)==(request if active else 0)
+     if active:
+      # Native initialization clears selections in stages 0/1. Showing UI then
+      # loses a cached/fast choice, which reproduced the mode-switch hang.
+      for stage in [0,1]:
+       i(initial_state+0x10,stage);c.WINFUNCTYPE(None)(M)()
+       assert not native_ui_calls and not ui_calls and get(D+28)==0 and get(D+12384)==0
+      i(initial_state+0x10,2);c.WINFUNCTYPE(None)(M)()
+      assert get(D+28)==119 and get(D+12448)==0 and get(D+12384)==1
+      assert native_ui_calls==([(B+0xdadd380,0)] if request==1 else [])
+      assert ui_calls==([(B+0xdadd380,0)] if request==2 else [])
      c.WINFUNCTYPE(None)(M)();assert get(D+12384)==int(active)
      checks+=1
 
@@ -1569,7 +1579,7 @@ for request in [0,1,2,3]:
 # check or an existing play picker. The full registers/SSE ABI survives the call.
 for picker in ['EarlyPlayCall','InitialPlayCallTick']:
  practice_scope();i(D,0);i(D+12368,1);i(D+12372,1);i(D+12384,0)
- i(states+0xa0,1 if picker=='EarlyPlayCall' else 5);c.c_ubyte.from_address(pause).value=0
+ i(states+0xa0,1 if picker=='EarlyPlayCall' else 5);i(initial_state+0x10,0);i(D+12448,0);c.c_ubyte.from_address(pause).value=0
  i(D+84,1);i(D+88,0);i(D+92,0);q(D+12376,restore_address)
  put(M+0x100,Path('Evidence/'+picker+'.bin').read_bytes())
  # Let each original prologue/epilogue execute after the pending entry is handled.
@@ -1580,6 +1590,8 @@ for picker in ['EarlyPlayCall','InitialPlayCallTick']:
  ui_calls.clear();native_ui_calls.clear();transition_calls.clear()
  put(M,bytes.fromhex('4883ec28')+imm('48b9',arg)+imm('48b8',M+0x100)+bytes.fromhex('ffd04883c428c3'))
  c.WINFUNCTYPE(None)(M)()
+ assert get(D+12384)==0 and not native_ui_calls and not ui_calls
+ i(initial_state+0x10,2);c.WINFUNCTYPE(None)(M)()
  assert get(D+12384)==1 and len(native_ui_calls)==1 and not ui_calls
  c.WINFUNCTYPE(None)(M)();assert get(D+12384)==1 and len(native_ui_calls)==1
  checks+=1
@@ -1617,18 +1629,37 @@ first_snap_mock=UiShow(finish_first_snap)
 put(B+0x7babb30,jump(c.cast(first_snap_mock,c.c_void_p).value))
 for team in [0,1]:
  practice_scope();i(D+12368,1);i(D+12372,2);i(D+12384,0)
- i(D+24,151);i(D+28,0);i(D+72,17);i(states+0xa0,1);c.c_ubyte.from_address(pause).value=0
+ i(D+24,151);i(D+28,0);i(D+72,17);i(initial_state+0x10,0);i(D+12448,0);i(states+0xa0,1);c.c_ubyte.from_address(pause).value=0
  i(match+0x1c8,team);i(D+12048,1);i(D+12052,team)
  i(D+44,1);f(D+32,0);f(D+36,-15);f(D+40,0);f(D+48,-5)
  i(D+84,1);i(D+88,0);i(D+92,0);first_snap_calls.clear();cpu_calls.clear()
  put(M,bytes.fromhex('4883ec28')+imm('48b8',restore_address)+bytes.fromhex('ffd04883c428c3'))
  c.WINFUNCTYPE(None)(M)()
+ assert not first_snap_calls and get(D+28)==0
+ i(initial_state+0x10,2);c.WINFUNCTYPE(None)(M)()
  assert first_snap_calls==[(B+0xdadd380,0)] and get(D+28)==151
  assert get(D+12440)==17 and get(D+72)==18 and c.c_float.from_address(D+76).value==4
  assert get(D+12416)==team and get(D+12420)==1 and get(match+0x1d0)==2
  assert c.c_float.from_address(D+12424).value==-15 and c.c_float.from_address(match+0x16c).value==-11
  c.WINFUNCTYPE(None)(M)()
  assert get(D+72)==18 and get(match+0x1d0)==2 and len(first_snap_calls)==1 and not cpu_calls
+ checks+=1
+
+
+# CPU possession is a 32-bit field. It must never overwrite the high half of
+# the 64-bit refresh-helper pointer, including after both teams have called plays.
+refresh_high=D+0x5000
+put(refresh_high,Path('Evidence/PlayCallRefresh.bin').read_bytes())
+put(B+0x7babb30,jump(c.cast(ui_mock,c.c_void_p).value))
+put(M+0x100,Path('Evidence/InitialPlayCallTick.bin').read_bytes())
+for team in [0,1,0,1]:
+ practice_scope();i(states+0xa0,5);i(initial_state+0x10,2)
+ q(D+12392,refresh_high);i(D+12028,team);i(D+12016,1);i(D+180,0)
+ q(D+12376,0);ui_calls.clear();cpu_calls.clear()
+ put(M,bytes.fromhex('4883ec28')+imm('48b9',initial_state)+imm('48b8',M+0x100)+bytes.fromhex('ffd04883c428c3'))
+ c.WINFUNCTYPE(None)(M)()
+ assert c.c_uint64.from_address(D+12392).value==refresh_high
+ assert get(D+12016)==0 and ui_calls==[(B+0xdadd380,0)] and not cpu_calls
  checks+=1
 
 print('PASS: %d native hook execution checks (no game access)'%checks)

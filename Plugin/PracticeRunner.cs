@@ -150,6 +150,7 @@ namespace SituationalPractice
                             operation="check saved practice spot";
                             var selectedSpot=runtime.SavedPracticeSpot();
                             if(snap.Match!=sessionMatch)throw new InvalidOperationException("Waiting for offline Dynasty practice session to settle.");
+                            runtime.UpdateFirstDownLine(snap,PracticeModes.IsDrive(session.Mode));
                             if(session.Mode==PracticeMode.DefaultPractice){
                                 // No drive commands, CPU picks, Stats or custom
                                 // scoring in the game's original practice mode.

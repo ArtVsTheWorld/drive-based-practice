@@ -35,12 +35,13 @@ play each snap and let the CPU choose the other side. **Stats** shows session to
 drive at the chosen spot. Returning to Default Practice restores normal practice
 play selection.
 
-There is no game clock or yellow first-down line. Kicking sequences are not
-supported. Logs and reports are in `Plugins/SituationalPractice`.
+Drive Practice and Scrimmage enable the game's yellow first-down line. There is
+no game clock, and kicking sequences are not supported. Logs and reports are in
+`Plugins/SituationalPractice`.
 
 ## Source
 
-Current version: **0.8.9 beta**. The mode transitions and first-snap changes have
-passed local checks; in-game testing is still needed.
+Current version: **0.8.11 beta**. Mode switching is confirmed working in-game.
+The first-down line is in testing, including visibility after each play.
 
 [Build and test](docs/building.md) | [Updating after an EA patch](docs/updating.md)
