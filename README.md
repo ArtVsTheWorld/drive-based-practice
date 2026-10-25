@@ -30,8 +30,7 @@ and session stats.
 
 Use **Pause > Mode** to cycle through Default Practice, Drive Practice and Scrimmage.
 Switching modes clears scores and stats. In the two drive modes, choose your side's
-play each snap and let the CPU choose the other side. When you play defense,
-the CPU picks its offense first so its personnel can appear in the play-call screen. **Stats** shows session totals,
+play each snap and let the CPU choose the other side. **Stats** shows session totals,
 **Flip Sides** resets the drive and keeps totals, and **Re-spot Ball** starts a fresh
 drive at the chosen spot. Returning to Default Practice restores normal practice
 play selection.
@@ -47,7 +46,7 @@ no game clock, and kicking sequences are not supported. Logs and reports are in
 
 ## Source
 
-Current version: **0.8.17 beta**. Fourth-down line visibility, mode
-changes and the offensive-personnel display are being tested.
+Current version: **0.8.18 beta**. Offensive personnel are not displayed
+while you choose a defensive play.
 
 [Build and test](docs/building.md) | [Updating after an EA patch](docs/updating.md)

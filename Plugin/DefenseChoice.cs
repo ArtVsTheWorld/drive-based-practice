@@ -5,16 +5,6 @@ namespace SituationalPractice
 {
     public static class PracticeSide
     {
-        // Native practice controller bindings use -1 / 255 for an unbound
-        // team. Only resolve a single local controller; ambiguous bindings
-        // retain the normal selection-based identification path.
-        public static bool TryBoundUserTeam(int controller0,int side0,int controller1,int side1,out int team)
-        {
-            bool first=controller0>=0 && controller0<8 && side0==0;
-            bool second=controller1>=0 && controller1<8 && side1==1;
-            bool emptyFirst=controller0==-1 && side0==255,emptySecond=controller1==-1 && side1==255;
-            team=first && emptySecond?0:second && emptyFirst?1:-1;return team!=-1;
-        }
         // Native service bits 4/8 acknowledge offense/defense registration.
         // Only one current user selection may be ready before CPU submission.
         public static bool TryUserTeam(int possession,int flags,out int team)

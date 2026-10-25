@@ -94,34 +94,8 @@ Call Sheet compatibility excludes only the five-byte calls at `0x35ff6ef` and
 `0x7b7e964` in the current layout. The surrounding code and owned hook sites remain
 checked. Re-establish those exclusions from the new code after an update.
 
-## CPU offense before a defensive selection
-
-At phase-5 stage 2, resolve one local user from the native controller bindings
-`[image+0xf857018]`, vtable `0xb324050`, two 44-byte records at +0x148/+0x174.
-Accept a controller index 0..7 with its matching team side, and an unbound
-other side (-1/255). Ambiguous bindings retain selection-based identification.
-Early offensive payloads use ready value 2; ordinary post-selection payloads use 1.
-The game-thread helper at code+19968 checks the bound match, mode, phase, stage,
-identity, possession, unchanged binding object/records, current service selection,
-empty manager readiness, and pending mode commands before registering only the CPU
-offense. Its pointer is at data+12456; never overlap the first-snap snapshot. Code
-allocation is 24576 bytes, with 2048 reserved for this helper.
-
-The normal native registration copies PlayData immediately and queues native
-acknowledgement messages; it does not set service readiness bits synchronously.
-Keep the personnel request at data+12504 until a later stage-2 tick sees offense
-readiness 4, CPU manager readiness 1 and human readiness 0, with the same actual
-formation/set/play/type. Never treat a delayed service bit as a cleared selection.
-Refresh the native personnel widget with DefPlaycallTimerEnded (0x7b84950), then
-DefPlaycallTimerStarted (0x7b848a0, zero/untimed). These functions only post UI data;
-they do not start a gameplay clock. The native DefensePlayClock art class has an
-untimed layout that hides the digits while retaining formation and personnel; zero
-uses that layout. Resetting its value avoids stale personnel
-on successive untimed calls. Diagnostics count early offense and widget updates.
-If asynchronous UI initialization clears the CPU manager readiness byte, clear
-the early latch and pending notification, then retry against the latest bindings
-and service flags. A missing service acknowledgement alone must not reroll offense.
-Flip Sides can leave the placement command queued while selection is open. Allow
-early offense for pending=1/manual=1 with no pending possession change; leave the
-spot command untouched so its existing preplay path still applies it. Never auto-select
-a human defense, commit twice, or retain a payload after a side/possession change.
+CPU selection uses the existing post-user-choice flow on both sides. The
+experimental early-offense and personnel-widget logic was removed in 0.8.18
+after the native widget still failed to render in practice. Do not restore its
+controller-binding reads, UI notifications or extra helper block as part of a
+relocation update. The confirmed Default Practice readiness fix remains.

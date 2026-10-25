@@ -1,4 +1,4 @@
-DRIVE-BASED PRACTICE 0.8.17 BETA
+DRIVE-BASED PRACTICE 0.8.18 BETA
 By Ace
 
 Put SituationalPractice.dll in MMC Mod Manager's Plugins folder. Restart MMC
@@ -11,9 +11,7 @@ in Default Practice.
 
 Pause > Mode cycles Default Practice > Drive Practice > Scrimmage > Default Practice.
 In the two drive modes, ball position, downs and distance advance. Pick your
-side's play each snap; the CPU chooses the other side. When you play defense,
-the CPU picks its offense first so you can see its personnel before your selection.
-Pause > Stats shows totals.
+side's play each snap; the CPU chooses the other side. Pause > Stats shows totals.
 Your first snap counts toward the drive and stats; there is no throwaway setup play.
 Drive Practice repeats drives from your chosen spot. Offensive TDs score 6;
 defensive turnovers score 4, fourth-down stops 2, and return TDs 6 total.
@@ -29,4 +27,4 @@ The next snap counts normally. Use Choose New Play to change plays before the sn
 The yellow first-down line is enabled in Drive Practice and Scrimmage.
 No timed games or kicking sequences in this beta.
 Logs and crash reports are under Plugins/SituationalPractice.
-Fourth-down visibility, mode changes and the personnel display are in testing.
+Offensive personnel are not displayed while you choose a defensive play.
