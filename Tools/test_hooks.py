@@ -1546,6 +1546,11 @@ for request in [0,1,2,3]:
      assert get(D+12372)==(0 if active else request)
      assert get(D+4)==get(D+252)==get(D+164)==get(D+200)==int(not active)
      assert get(D+28)==(119 if active else 0)
+     if active:
+      assert c.c_uint64.from_address(D+12400).value==match and c.c_uint64.from_address(D+12408).value==states
+      assert get(D+12416)==0 and get(D+12420)==1
+      assert c.c_float.from_address(D+12424).value==-15 and c.c_float.from_address(D+12428).value==-5
+      assert get(D+12432)==get(D+12436)==0 and get(D+12440)==get(D+72) and get(D+12444)==119
      assert get(D+12048)==(0 if active else int(request==2))
      assert get(match+0x1cc)==(0 if active and request==2 else 1)
      assert get(match+0x1d0)==(1 if active else 4)
@@ -1592,6 +1597,39 @@ abi_entry+=bytes.fromhex('ff15')+struct.pack('<i',len(capture))+capture+struct.p
 put(M,abi_entry);c.WINFUNCTYPE(None)(M)()
 assert [c.c_uint64.from_address(saved+x*8).value for x in range(6)]==abi_expected
 assert c.string_at(saved+64,96)==bytes(range(96));checks+=1
+
+
+# A fast first snap may finish before the helper observes the start ACK. Keep
+# its preplay counter/spot, then publish the ACK after UI has been entered.
+first_snap_entry=M+0xf000;first_snap_gate=M+0xf100
+put(first_snap_gate,Path('Evidence/Gate2.bin').read_bytes())
+put(first_snap_entry,bytes.fromhex('53564883ec28')+imm('48bb',obj)+bytes.fromhex('33f6')+jump(first_snap_gate))
+put(B+skips[2],ending(1))
+first_snap_calls=[]
+def finish_first_snap(this,delay):
+ assert get(D+28)==0 and get(D+12444)==151
+ assert get(D+12440)==17 and c.c_float.from_address(D+12424).value==-15
+ first_snap_calls.append((this,delay))
+ i(states+0xa0,4);f(match+0x16c,-11);i(match+0x1d0,2)
+ q(states+0x50,play);i(play+0x250,0);c.c_ubyte.from_address(play+0x3a8).value=0;f(play+0x234,4)
+ c.WINFUNCTYPE(None)(first_snap_entry)()
+first_snap_mock=UiShow(finish_first_snap)
+put(B+0x7babb30,jump(c.cast(first_snap_mock,c.c_void_p).value))
+for team in [0,1]:
+ practice_scope();i(D+12368,1);i(D+12372,2);i(D+12384,0)
+ i(D+24,151);i(D+28,0);i(D+72,17);i(states+0xa0,1);c.c_ubyte.from_address(pause).value=0
+ i(match+0x1c8,team);i(D+12048,1);i(D+12052,team)
+ i(D+44,1);f(D+32,0);f(D+36,-15);f(D+40,0);f(D+48,-5)
+ i(D+84,1);i(D+88,0);i(D+92,0);first_snap_calls.clear();cpu_calls.clear()
+ put(M,bytes.fromhex('4883ec28')+imm('48b8',restore_address)+bytes.fromhex('ffd04883c428c3'))
+ c.WINFUNCTYPE(None)(M)()
+ assert first_snap_calls==[(B+0xdadd380,0)] and get(D+28)==151
+ assert get(D+12440)==17 and get(D+72)==18 and c.c_float.from_address(D+76).value==4
+ assert get(D+12416)==team and get(D+12420)==1 and get(match+0x1d0)==2
+ assert c.c_float.from_address(D+12424).value==-15 and c.c_float.from_address(match+0x16c).value==-11
+ c.WINFUNCTYPE(None)(M)()
+ assert get(D+72)==18 and get(match+0x1d0)==2 and len(first_snap_calls)==1 and not cpu_calls
+ checks+=1
 
 print('PASS: %d native hook execution checks (no game access)'%checks)
 

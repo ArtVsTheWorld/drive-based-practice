@@ -16,7 +16,8 @@ You can set `MMC_ROOT` instead of passing `-MmcRoot`. Build output goes into
 The package command checks the DLL version and makes a ZIP containing only the
 plugin DLL and a short `README.txt`. It does not install or launch anything.
 
-`Test.ps1` checks drive rules, CPU play choices, Stats, Scrimmage and diagnostics.
+`Test.ps1` checks drive rules, CPU play choices, Stats, Scrimmage, first-snap
+counting and diagnostics.
 These tests use local test data and do not open or patch the game.
 
 For generated native hooks and compatibility checks:

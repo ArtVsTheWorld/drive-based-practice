@@ -15,6 +15,20 @@ namespace SituationalPractice
         public int[] PlayEvents=new int[0];
         public int Score(int team){return team==0?OffenseScore:DefenseScore;}
         public bool HasEvent(int type){return Array.IndexOf(PlayEvents,type)>=0;}
+        internal static NativeSnapshot ReadStart(byte[] block,int command,out int completed)
+        {
+            completed=0;
+            if(block==null || block.Length!=48)throw new InvalidOperationException("Invalid drive-start snapshot size.");
+            if(BitConverter.ToInt32(block,44)!=command)return null;
+            var snap=new NativeSnapshot{Match=BitConverter.ToInt64(block,0),States=BitConverter.ToInt64(block,8),Phase=1,
+                Possession=BitConverter.ToInt32(block,16),NativeDown=BitConverter.ToInt32(block,20),
+                Ball=BitConverter.ToSingle(block,24)+50,Line=BitConverter.ToSingle(block,28)+50,
+                OffenseScore=BitConverter.ToInt32(block,32),DefenseScore=BitConverter.ToInt32(block,36)};
+            if(snap.Match==0 || snap.States==0 || snap.Possession<0 || snap.Possession>1 || snap.NativeDown<1 || snap.NativeDown>4
+                || !Scenario.Finite(snap.Ball) || !Scenario.Finite(snap.Line) || snap.Ball<=0 || snap.Ball>=100 || snap.Line<=snap.Ball || snap.Line>100)
+                throw new InvalidOperationException("Invalid drive-start situation.");
+            completed=BitConverter.ToInt32(block,40);return snap;
+        }
     }
     public sealed class SpotEvent
     {
@@ -39,6 +53,7 @@ namespace SituationalPractice
         public int Completed { get { return Int(data+72); } }
         public float CompletedGain { get { return Float(data+76); } }
         public void DiscardEvents(){consumed=Sequence;}
+        public NativeSnapshot AppliedStart(int command,out int completed){return NativeSnapshot.ReadStart(Read(data+12400,48),command,out completed);}
         public long Controller { get { return Long(data+8); } }
         public int UserTeam {get{return Int(data+168);}}
         public int ModeRequests {get{return Int(data+12032);}}
@@ -51,6 +66,7 @@ namespace SituationalPractice
             text.AppendLine("early_picker_transitions="+Int(data+12360)+" last_endplay_caller=0x"+(Long(data+12080)-image).ToString("x")+" endplay_phase="+Int(data+12088));
             text.AppendLine("mode_requests="+ModeRequests+" possession_pending="+Int(data+12048)+" possession_target="+Int(data+12052));
             text.AppendLine("mode_menu_enabled="+Int(data+12368)+" mode_entry_pending="+Int(data+12372)+" mode_entries_applied="+Int(data+12384));
+            text.AppendLine("drive_start_command="+Int(data+12444)+" drive_start_completed="+Int(data+12440));
             text.AppendLine("match=0x"+snap.Match.ToString("x")+" states=0x"+snap.States.ToString("x")+" controller=0x"+BitConverter.ToInt64(block,8).ToString("x"));
             text.AppendLine("phase="+snap.Phase+" possession="+snap.Possession+" down="+snap.NativeDown+" ball="+snap.Ball.ToString("R",CultureInfo.InvariantCulture)+" line="+snap.Line.ToString("R",CultureInfo.InvariantCulture)+" gain="+snap.Gain.ToString("R",CultureInfo.InvariantCulture)+" score="+snap.OffenseScore+":"+snap.DefenseScore);
             text.AppendLine("enabled="+BitConverter.ToInt32(block,0)+" queued_command="+BitConverter.ToInt32(block,24)+" applied_command="+BitConverter.ToInt32(block,28)+" spot_sequence="+BitConverter.ToInt32(block,64)+" completed="+BitConverter.ToInt32(block,72));
@@ -130,7 +146,7 @@ namespace SituationalPractice
                         installed.Add(p); PatchBytes(p.Address,p.Replacement);
                     } } catch { foreach(var p in installed)PatchBytes(p.Address,p.Original); installed.Clear(); throw; }
                 }
-                log("Installed inactive practice hooks in PID "+pid+"; image=0x"+image.ToString("x")+" code=0x"+code.ToString("x")+" data=0x"+data.ToString("x")+"; awaiting practice initialization.");
+                log("Installed inactive practice hooks in PID "+pid+"; image=0x"+image.ToString("x")+" code=0x"+code.ToString("x")+" data=0x"+data.ToString("x")+"; awaiting practice menu binding.");
                 for(int i=0;i<Sites.Length;i++)log("Hook "+i+": native RVA=0x"+Sites[i].ToString("x")+" address=0x"+(image+Sites[i]).ToString("x")+" trampoline=0x"+(code+i*1024).ToString("x"));
                 log("CPU commit trampoline=0x"+(code+16384).ToString("x"));
             } catch { CloseHandle(handle); handle=IntPtr.Zero; game.Dispose(); throw; }
@@ -790,7 +806,15 @@ namespace SituationalPractice
             b.H("49ba");b.Q(data);b.H("498b4a10f3410f104a3048b8");b.Q(image+0x5d59570);b.H("ffd0");
             b.H("49ba");b.Q(data);b.H("498b4a10498d522041b00148b8");b.Q(image+0x5d595c0);b.H("ffd0");
             EmitScores(b,image,data);
-            b.H("418b42184189421c");
+            // Keep the actual pre-snap situation and completion counter. The
+            // worker may next run after the user has already snapped the ball.
+            b.H("498b4210498982");b.I(12400);
+            foreach(var field in new[]{new[]{0x1c8,12416},new[]{0x1d0,12420},new[]{0x16c,12424},new[]{0x1c0,12428},new[]{0x1d8,12432},new[]{0x1dc,12436}}){
+                b.H("8b88");b.I(field[0]);b.H("41898a");b.I(field[1]);
+            }
+            b.H("48b9");b.Q(image+0xf8575a0);b.H("488b0949898a");b.I(12408);
+            b.H("418b4a4841898a");b.I(12440);
+            b.H("418b4a1841898a");b.I(12444);
             b.H("48b8");b.Q(image+0xf547540);b.H("488b084885c9");b.J("0f84","defaultHudDone");
             b.H("ba1400000041b00148b8");b.Q(image+0x369ed10);b.H("ffd0");
             b.Label("defaultHudDone");
@@ -799,7 +823,8 @@ namespace SituationalPractice
             b.H("48b9");b.Q(image+0xdadd380);b.H("33d248b8");b.Q(image+0x7babdd0);b.H("ffd0");b.J("e9","uiDone");
             b.Label("customUi");b.H("48b9");b.Q(image+0xdadd380);b.H("33d248b8");b.Q(image+0x7babb30);b.H("ffd0");
             b.Label("uiDone");
-            b.H("49ba");b.Q(data);b.H("f041ff82");b.I(12384);
+            // Publish acknowledgement last, after the full UI transition.
+            b.H("49ba");b.Q(data);b.H("f041ff82");b.I(12384);b.H("418b42184189421c");
             for(int x=0;x<6;x++){b.H("f30f6f");b.B((byte)(0x84+x*8));b.H("24");b.I(32+x*16);}
             b.H("4881c488000000415b415941585a59");
             b.Label("native");b.H("415a589dc3");return b.Finish();

@@ -53,6 +53,11 @@ turnovers/returns, mode changes and Stats. Returning to default practice must
 restore the native HUD flags and two-sided picker; entering a custom mode must
 rebuild its picker once, with no cached selection or penalty loop. Native mode
 entry is applied at the safe preplay or play-selection update on the game thread.
+The mode-entry thunk captures the pre-snap situation and completion counter in
+the shared block at offset 12400. It publishes the applied command only after
+opening the picker. Keep that order: the worker must retain a first result that
+finishes before it observes the acknowledgement. Attach/recovery must also use
+the safe pre-snap entry, rather than waiting for an end-of-play reset.
 The yellow first-down line and kicking sequences are still unsupported.
 
 Call Sheet compatibility excludes only the five-byte calls at `0x35ff6ef` and

@@ -122,9 +122,10 @@ namespace SituationalPractice
                 if(refreshPicker)runtime.QueuePlayCall(userTeam);
                 Log("Explicit clean development handoff: current drive retained for user team "+userTeam+".");return;
             }
-            Queue(starting);
-            if(refreshPicker && snap.Phase==5){runtime.RefreshPlayCall();Log("Explicit live recovery: reopen native play picker once on the game thread.");}
-            Log("Automatic drive queued at native spot "+starting.Ball.ToString("0.0")+". No control window.");
+            runtime.DiscardEvents();
+            runtime.QueueCustomModeStart(new PossessionDrive{Possession=snap.Possession,Spot=starting.Copy(),Score0=snap.OffenseScore,Score1=snap.DefenseScore},++command);
+            pending=starting.Copy();sideReset=true;previous=null;seen=runtime.Completed;livePlay=false;waitingResult=0;
+            Log("Drive start queued before the next snap at "+starting.Ball.ToString("0.0")+". No initialization play; the first actual play counts.");
         }
         public void Run()
         {
@@ -183,7 +184,10 @@ namespace SituationalPractice
                             runtime.FindStatsMenu();
                             if(pending!=null && runtime.Applied==command) {
                                 snap=runtime.Snapshot();
-                                pending=null;seen=runtime.Completed;previous=snap;plays=0;
+                                int startCompleted;
+                                var start=runtime.AppliedStart(command,out startCompleted);
+                                pending=null;seen=start==null?runtime.Completed:startCompleted;previous=start??snap;plays=0;
+                                livePlay=start!=null && (snap.Phase==3 || runtime.Completed>seen);
                                 userTeam=runtime.UserTeam;
                                 if(!sideReset)ChoosePlay();
                                 sideReset=false;

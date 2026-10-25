@@ -13,7 +13,11 @@ then restart MMC and launch the game through it.
 
 Enter Dynasty practice. **Default Practice** is selected each time you enter.
 It works like the game's regular practice: the ball returns to the same spot,
-and you select the plays for both sides. No setup play is required in this mode.
+and you select the plays for both sides.
+
+**No initialization play is required in any mode.** Choose a drive mode from the
+pause menu, select your play, and start. The first snap counts toward the drive
+and session stats.
 
 ## Modes
 
@@ -36,7 +40,7 @@ supported. Logs and reports are in `Plugins/SituationalPractice`.
 
 ## Source
 
-Current version: **0.8.8 beta**. The new mode transitions have passed local checks;
-in-game testing is still needed.
+Current version: **0.8.9 beta**. The mode transitions and first-snap changes have
+passed local checks; in-game testing is still needed.
 
 [Build and test](docs/building.md) | [Updating after an EA patch](docs/updating.md)
