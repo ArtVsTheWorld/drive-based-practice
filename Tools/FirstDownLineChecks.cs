@@ -28,6 +28,13 @@ class FirstDownLineChecks
         Put(processor+0x61,new byte[]{0});line.Update(Snap(42,45,2),true);
         Check(Read(processor+0x61,1)[0]==1,"A native play reset cannot permanently clear the line");
         line.Update(Snap(),false);Check(Read(processor+0x61,1)[0]==0,"Returning to Default Practice restores the original flag");
+        line=Setup();Put(processor+0x20,BitConverter.GetBytes(35));line.Update(Snap(42,44,4),true);
+        Check(Read(processor+0x61,1)[0]==1,"The native fourth-down line style must also remain visible");
+        line.Update(Snap(),false);Check(Read(processor+0x61,1)[0]==0,"Fourth-down visibility also restores in default mode");
+        line=Setup();line.Update(Snap(),true);Put(processor+0x20,BitConverter.GetBytes(44));line.Update(Snap(),true);
+        Check(Read(processor+0x61,1)[0]==0,"Transient line rebuilding must release its override safely");
+        Put(processor+0x20,BitConverter.GetBytes(35));line.Update(Snap(42,44,4),true);
+        Check(Read(processor+0x61,1)[0]==1,"A rebuilt fourth-down slot must regain visibility");
         line=Setup();line.Update(Snap(),true);line.Update(Snap(95,100),true);
         Check(Read(processor+0x61,1)[0]==0,"Goal-to-go hides the yellow line");
         line.Update(Snap(),true);line.Restore();Check(Read(processor+0x61,1)[0]==0,"Plugin shutdown restores its override");

@@ -35,13 +35,17 @@ play each snap and let the CPU choose the other side. **Stats** shows session to
 drive at the chosen spot. Returning to Default Practice restores normal practice
 play selection.
 
+Mode changes keep the current plays when both teams have already selected one.
+The first snap in a drive mode counts normally. Use Choose New Play from the
+pause menu to change plays before that snap.
+
 Drive Practice and Scrimmage enable the game's yellow first-down line. There is
 no game clock, and kicking sequences are not supported. Logs and reports are in
 `Plugins/SituationalPractice`.
 
 ## Source
 
-Current version: **0.8.11 beta**. Mode switching is confirmed working in-game.
-The first-down line is in testing, including visibility after each play.
+Current version: **0.8.13 beta**. Fourth-down line visibility and resuming the
+current plays after a mode change are being tested.
 
 [Build and test](docs/building.md) | [Updating after an EA patch](docs/updating.md)

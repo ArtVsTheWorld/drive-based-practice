@@ -1,5 +1,5 @@
 {
-  "pluginVersion": "0.8.11",
+  "pluginVersion": "0.8.13",
   "layout": "October 13, 2026",
   "wholeExeHashGate": false,
   "regions": [
@@ -293,7 +293,7 @@
   ],
   "references": {
     "0x100001": [
-      "Plugin/NativeRuntime.cs:1022"
+      "Plugin/NativeRuntime.cs:1034"
     ],
     "0x25a3060": [
       "Plugin/NativeCompatibility.cs:63",
@@ -301,7 +301,7 @@
     ],
     "0x2ad8410": [
       "Plugin/NativeCompatibility.cs:26",
-      "Plugin/NativeRuntime.cs:661"
+      "Plugin/NativeRuntime.cs:662"
     ],
     "0x34864f0": [
       "Plugin/NativeCompatibility.cs:27"
@@ -313,14 +313,14 @@
       "Plugin/NativeCompatibility.cs:28"
     ],
     "0x35e0cb2": [
-      "Plugin/PracticeRunner.cs:212"
+      "Plugin/PracticeRunner.cs:216"
     ],
     "0x35e2110": [
       "Plugin/NativeCompatibility.cs:29",
-      "Plugin/NativeRuntime.cs:874",
-      "Plugin/NativeRuntime.cs:875",
-      "Plugin/NativeRuntime.cs:928",
-      "Plugin/NativeRuntime.cs:929"
+      "Plugin/NativeRuntime.cs:886",
+      "Plugin/NativeRuntime.cs:887",
+      "Plugin/NativeRuntime.cs:940",
+      "Plugin/NativeRuntime.cs:941"
     ],
     "0x35fd200": [
       "Plugin/NativeCompatibility.cs:30",
@@ -343,8 +343,8 @@
     "0x369ed10": [
       "Plugin/NativeCompatibility.cs:34",
       "Plugin/NativeRuntime.cs:96",
-      "Plugin/NativeRuntime.cs:838",
-      "Plugin/NativeRuntime.cs:935"
+      "Plugin/NativeRuntime.cs:839",
+      "Plugin/NativeRuntime.cs:947"
     ],
     "0x377bb40": [
       "Plugin/NativeCompatibility.cs:35",
@@ -352,7 +352,7 @@
     ],
     "0x3f079e0": [
       "Plugin/NativeCompatibility.cs:36",
-      "Plugin/NativeRuntime.cs:584"
+      "Plugin/NativeRuntime.cs:585"
     ],
     "0x4ff38d0": [
       "Plugin/NativeCompatibility.cs:37"
@@ -380,24 +380,25 @@
       "Plugin/NativeCompatibility.cs:39"
     ],
     "0x4ff4133": [
-      "Plugin/NativeRuntime.cs:531"
+      "Plugin/NativeRuntime.cs:532"
     ],
     "0x4ff5520": [
       "Plugin/NativeCompatibility.cs:40",
-      "Plugin/NativeRuntime.cs:670"
+      "Plugin/NativeRuntime.cs:671"
     ],
     "0x5d0e950": [
       "Plugin/NativeCompatibility.cs:41",
-      "Plugin/NativeRuntime.cs:706",
-      "Plugin/NativeRuntime.cs:736",
-      "Plugin/NativeRuntime.cs:840"
+      "Plugin/NativeRuntime.cs:707",
+      "Plugin/NativeRuntime.cs:737",
+      "Plugin/NativeRuntime.cs:846",
+      "Plugin/NativeRuntime.cs:851"
     ],
     "0x5d49e30": [
       "Plugin/NativeCompatibility.cs:42",
       "Plugin/NativeRuntime.cs:96"
     ],
     "0x5d4a02f": [
-      "Plugin/NativeRuntime.cs:572"
+      "Plugin/NativeRuntime.cs:573"
     ],
     "0x5d4a660": [
       "Plugin/NativeCompatibility.cs:64",
@@ -405,49 +406,49 @@
     ],
     "0x5d59530": [
       "Plugin/NativeCompatibility.cs:43",
-      "Plugin/NativeRuntime.cs:751",
-      "Plugin/NativeRuntime.cs:824",
-      "Plugin/NativeRuntime.cs:924"
+      "Plugin/NativeRuntime.cs:752",
+      "Plugin/NativeRuntime.cs:825",
+      "Plugin/NativeRuntime.cs:936"
     ],
     "0x5d59570": [
       "Plugin/NativeCompatibility.cs:44",
       "Plugin/NativeRuntime.cs:96",
-      "Plugin/NativeRuntime.cs:752",
-      "Plugin/NativeRuntime.cs:825",
-      "Plugin/NativeRuntime.cs:925"
+      "Plugin/NativeRuntime.cs:753",
+      "Plugin/NativeRuntime.cs:826",
+      "Plugin/NativeRuntime.cs:937"
     ],
     "0x5d595c0": [
       "Plugin/NativeCompatibility.cs:45",
       "Plugin/NativeRuntime.cs:96",
-      "Plugin/NativeRuntime.cs:753",
-      "Plugin/NativeRuntime.cs:826",
-      "Plugin/NativeRuntime.cs:926"
+      "Plugin/NativeRuntime.cs:754",
+      "Plugin/NativeRuntime.cs:827",
+      "Plugin/NativeRuntime.cs:938"
     ],
     "0x5d59f20": [
       "Plugin/NativeCompatibility.cs:60",
-      "Plugin/NativeRuntime.cs:867"
+      "Plugin/NativeRuntime.cs:879"
     ],
     "0x5d5aaa0": [
       "Plugin/NativeCompatibility.cs:46"
     ],
     "0x5d5ad16": [
-      "Plugin/NativeRuntime.cs:564"
+      "Plugin/NativeRuntime.cs:565"
     ],
     "0x5d6ca80": [
       "Plugin/NativeCompatibility.cs:47"
     ],
     "0x5d6ccd1": [
-      "Plugin/PracticeRunner.cs:211"
+      "Plugin/PracticeRunner.cs:215"
     ],
     "0x5d70850": [
       "Plugin/NativeCompatibility.cs:48"
     ],
     "0x5d72356": [
-      "Plugin/NativeRuntime.cs:565"
+      "Plugin/NativeRuntime.cs:566"
     ],
     "0x5f09980": [
       "Plugin/NativeCompatibility.cs:49",
-      "Plugin/NativeRuntime.cs:673"
+      "Plugin/NativeRuntime.cs:674"
     ],
     "0x5fde170": [
       "Plugin/NativeCompatibility.cs:25"
@@ -455,7 +456,7 @@
     "0x7b7e7e0": [
       "Plugin/NativeCompatibility.cs:50",
       "Plugin/NativeRuntime.cs:114",
-      "Plugin/NativeRuntime.cs:652"
+      "Plugin/NativeRuntime.cs:653"
     ],
     "0x7b7e964": [
       "Plugin/NativeCompatibility.cs:20"
@@ -469,18 +470,18 @@
     ],
     "0x7babb30": [
       "Plugin/NativeCompatibility.cs:53",
-      "Plugin/NativeRuntime.cs:580",
-      "Plugin/NativeRuntime.cs:682",
-      "Plugin/NativeRuntime.cs:711",
-      "Plugin/NativeRuntime.cs:741",
-      "Plugin/NativeRuntime.cs:856"
+      "Plugin/NativeRuntime.cs:581",
+      "Plugin/NativeRuntime.cs:683",
+      "Plugin/NativeRuntime.cs:712",
+      "Plugin/NativeRuntime.cs:742",
+      "Plugin/NativeRuntime.cs:867"
     ],
     "0x7babda0": [
       "Plugin/NativeCompatibility.cs:54"
     ],
     "0x7babdd0": [
       "Plugin/NativeRuntime.cs:96",
-      "Plugin/NativeRuntime.cs:855"
+      "Plugin/NativeRuntime.cs:866"
     ],
     "0x7bcad50": [
       "Plugin/NativeCompatibility.cs:61",
@@ -488,14 +489,14 @@
     ],
     "0x7c17d20": [
       "Plugin/NativeCompatibility.cs:62",
-      "Plugin/NativeRuntime.cs:779"
+      "Plugin/NativeRuntime.cs:780"
     ],
     "0xae33f50": [
       "Plugin/NativeCompatibility.cs:55",
-      "Plugin/NativeRuntime.cs:671"
+      "Plugin/NativeRuntime.cs:672"
     ],
     "0xb474928": [
-      "Plugin/NativeRuntime.cs:1062"
+      "Plugin/NativeRuntime.cs:1074"
     ],
     "0xb4781e8": [
       "Plugin/NativeRuntime.cs:111"
@@ -504,154 +505,156 @@
       "Plugin/NativeRuntime.cs:111"
     ],
     "0xb646318": [
-      "Plugin/NativeRuntime.cs:302"
+      "Plugin/NativeRuntime.cs:303"
     ],
     "0xb646440": [
       "Plugin/NativeRuntime.cs:230",
-      "Plugin/NativeRuntime.cs:297",
-      "Plugin/NativeRuntime.cs:323"
+      "Plugin/NativeRuntime.cs:298",
+      "Plugin/NativeRuntime.cs:324"
     ],
     "0xb646598": [
-      "Plugin/NativeRuntime.cs:310",
-      "Plugin/NativeRuntime.cs:310",
-      "Plugin/NativeRuntime.cs:330",
-      "Plugin/NativeRuntime.cs:330"
+      "Plugin/NativeRuntime.cs:311",
+      "Plugin/NativeRuntime.cs:311",
+      "Plugin/NativeRuntime.cs:331",
+      "Plugin/NativeRuntime.cs:331"
     ],
     "0xb6465a0": [
-      "Plugin/NativeRuntime.cs:305",
-      "Plugin/NativeRuntime.cs:313"
+      "Plugin/NativeRuntime.cs:306",
+      "Plugin/NativeRuntime.cs:314"
     ],
     "0xb6467d0": [
       "Plugin/NativeRuntime.cs:227",
-      "Plugin/NativeRuntime.cs:292"
+      "Plugin/NativeRuntime.cs:293"
     ],
     "0xbab08c0": [
       "Plugin/NativeCompatibility.cs:56",
-      "Plugin/NativeRuntime.cs:886"
+      "Plugin/NativeRuntime.cs:898"
     ],
     "0xbab08d0": [
       "Plugin/NativeCompatibility.cs:57",
-      "Plugin/NativeRuntime.cs:886"
+      "Plugin/NativeRuntime.cs:898"
     ],
     "0xbab08e0": [
       "Plugin/NativeCompatibility.cs:58",
-      "Plugin/NativeRuntime.cs:886"
+      "Plugin/NativeRuntime.cs:898"
     ],
     "0xbab08f0": [
       "Plugin/NativeCompatibility.cs:59",
-      "Plugin/NativeRuntime.cs:889"
+      "Plugin/NativeRuntime.cs:901"
     ],
     "0xbae5718": [
-      "Plugin/NativeRuntime.cs:781"
+      "Plugin/NativeRuntime.cs:782"
     ],
     "0xd9e3818": [
-      "Plugin/NativeRuntime.cs:185",
-      "Plugin/NativeRuntime.cs:504",
-      "Plugin/NativeRuntime.cs:527",
-      "Plugin/NativeRuntime.cs:547",
-      "Plugin/NativeRuntime.cs:914"
-    ],
-    "0xdadd380": [
-      "Plugin/NativeRuntime.cs:577",
-      "Plugin/NativeRuntime.cs:682",
-      "Plugin/NativeRuntime.cs:711",
-      "Plugin/NativeRuntime.cs:741",
-      "Plugin/NativeRuntime.cs:855",
-      "Plugin/NativeRuntime.cs:856"
-    ],
-    "0xdadd921": [
-      "Plugin/NativeRuntime.cs:483",
-      "Plugin/NativeRuntime.cs:484",
-      "Plugin/NativeRuntime.cs:494",
-      "Plugin/NativeRuntime.cs:494"
-    ],
-    "0xdadd924": [
-      "Plugin/NativeRuntime.cs:483",
-      "Plugin/NativeRuntime.cs:484",
-      "Plugin/NativeRuntime.cs:495",
-      "Plugin/NativeRuntime.cs:495"
-    ],
-    "0xe2cb918": [
-      "Plugin/NativeRuntime.cs:409",
-      "Plugin/NativeRuntime.cs:672",
-      "Plugin/NativeRuntime.cs:672"
-    ],
-    "0xf3f5d48": [
       "Plugin/NativeRuntime.cs:185",
       "Plugin/NativeRuntime.cs:505",
       "Plugin/NativeRuntime.cs:528",
       "Plugin/NativeRuntime.cs:548",
-      "Plugin/NativeRuntime.cs:915"
+      "Plugin/NativeRuntime.cs:926"
+    ],
+    "0xdadd380": [
+      "Plugin/NativeRuntime.cs:578",
+      "Plugin/NativeRuntime.cs:683",
+      "Plugin/NativeRuntime.cs:712",
+      "Plugin/NativeRuntime.cs:742",
+      "Plugin/NativeRuntime.cs:866",
+      "Plugin/NativeRuntime.cs:867"
+    ],
+    "0xdadd921": [
+      "Plugin/NativeRuntime.cs:484",
+      "Plugin/NativeRuntime.cs:485",
+      "Plugin/NativeRuntime.cs:495",
+      "Plugin/NativeRuntime.cs:495"
+    ],
+    "0xdadd924": [
+      "Plugin/NativeRuntime.cs:484",
+      "Plugin/NativeRuntime.cs:485",
+      "Plugin/NativeRuntime.cs:496",
+      "Plugin/NativeRuntime.cs:496"
+    ],
+    "0xe2cb918": [
+      "Plugin/NativeRuntime.cs:410",
+      "Plugin/NativeRuntime.cs:673",
+      "Plugin/NativeRuntime.cs:673"
+    ],
+    "0xf3f5d48": [
+      "Plugin/NativeRuntime.cs:185",
+      "Plugin/NativeRuntime.cs:506",
+      "Plugin/NativeRuntime.cs:529",
+      "Plugin/NativeRuntime.cs:549",
+      "Plugin/NativeRuntime.cs:927"
     ],
     "0xf547540": [
-      "Plugin/NativeRuntime.cs:837",
-      "Plugin/NativeRuntime.cs:934"
+      "Plugin/NativeRuntime.cs:838",
+      "Plugin/NativeRuntime.cs:946"
     ],
     "0xf547a00": [
       "Plugin/NativeRuntime.cs:71",
-      "Plugin/NativeRuntime.cs:511",
-      "Plugin/NativeRuntime.cs:695",
-      "Plugin/NativeRuntime.cs:722",
-      "Plugin/NativeRuntime.cs:809"
+      "Plugin/NativeRuntime.cs:512",
+      "Plugin/NativeRuntime.cs:696",
+      "Plugin/NativeRuntime.cs:723",
+      "Plugin/NativeRuntime.cs:810"
     ],
     "0xf553bb0": [
       "Plugin/NativeRuntime.cs:225",
-      "Plugin/NativeRuntime.cs:291"
+      "Plugin/NativeRuntime.cs:292"
     ],
     "0xf6379e0": [
       "Plugin/NativeRuntime.cs:93",
       "Plugin/NativeRuntime.cs:184",
-      "Plugin/NativeRuntime.cs:368",
-      "Plugin/NativeRuntime.cs:506",
-      "Plugin/NativeRuntime.cs:549",
-      "Plugin/NativeRuntime.cs:670"
+      "Plugin/NativeRuntime.cs:369",
+      "Plugin/NativeRuntime.cs:507",
+      "Plugin/NativeRuntime.cs:550",
+      "Plugin/NativeRuntime.cs:671"
     ],
     "0xf856ef8": [
       "Plugin/NativeRuntime.cs:199"
     ],
     "0xf8575a0": [
       "Plugin/NativeRuntime.cs:187",
-      "Plugin/NativeRuntime.cs:513",
-      "Plugin/NativeRuntime.cs:560",
-      "Plugin/NativeRuntime.cs:562",
-      "Plugin/NativeRuntime.cs:578",
-      "Plugin/NativeRuntime.cs:599",
-      "Plugin/NativeRuntime.cs:693",
-      "Plugin/NativeRuntime.cs:706",
-      "Plugin/NativeRuntime.cs:720",
-      "Plugin/NativeRuntime.cs:736",
-      "Plugin/NativeRuntime.cs:805",
-      "Plugin/NativeRuntime.cs:834",
-      "Plugin/NativeRuntime.cs:840",
-      "Plugin/NativeRuntime.cs:848",
-      "Plugin/NativeRuntime.cs:942",
-      "Plugin/NativeRuntime.cs:963"
+      "Plugin/NativeRuntime.cs:514",
+      "Plugin/NativeRuntime.cs:561",
+      "Plugin/NativeRuntime.cs:563",
+      "Plugin/NativeRuntime.cs:579",
+      "Plugin/NativeRuntime.cs:600",
+      "Plugin/NativeRuntime.cs:694",
+      "Plugin/NativeRuntime.cs:707",
+      "Plugin/NativeRuntime.cs:721",
+      "Plugin/NativeRuntime.cs:737",
+      "Plugin/NativeRuntime.cs:806",
+      "Plugin/NativeRuntime.cs:835",
+      "Plugin/NativeRuntime.cs:846",
+      "Plugin/NativeRuntime.cs:851",
+      "Plugin/NativeRuntime.cs:859",
+      "Plugin/NativeRuntime.cs:954",
+      "Plugin/NativeRuntime.cs:975"
     ],
     "0xf8576b0": [
       "Plugin/NativeRuntime.cs:187",
-      "Plugin/NativeRuntime.cs:508",
-      "Plugin/NativeRuntime.cs:551",
-      "Plugin/NativeRuntime.cs:916",
-      "Plugin/NativeRuntime.cs:953"
+      "Plugin/NativeRuntime.cs:509",
+      "Plugin/NativeRuntime.cs:552",
+      "Plugin/NativeRuntime.cs:928",
+      "Plugin/NativeRuntime.cs:965"
     ],
     "0xf8abb50": [
       "Plugin/NativeRuntime.cs:80",
-      "Plugin/NativeRuntime.cs:409",
-      "Plugin/NativeRuntime.cs:624",
-      "Plugin/NativeRuntime.cs:639",
-      "Plugin/NativeRuntime.cs:673"
+      "Plugin/NativeRuntime.cs:410",
+      "Plugin/NativeRuntime.cs:625",
+      "Plugin/NativeRuntime.cs:640",
+      "Plugin/NativeRuntime.cs:674"
     ],
     "0xf8abf80": [
-      "Plugin/NativeRuntime.cs:1060"
+      "Plugin/NativeRuntime.cs:1072"
     ],
     "0xfa582a0": [
       "Plugin/NativeRuntime.cs:80",
       "Plugin/NativeRuntime.cs:113",
-      "Plugin/NativeRuntime.cs:409",
-      "Plugin/NativeRuntime.cs:631",
-      "Plugin/NativeRuntime.cs:645",
-      "Plugin/NativeRuntime.cs:700",
-      "Plugin/NativeRuntime.cs:730"
+      "Plugin/NativeRuntime.cs:410",
+      "Plugin/NativeRuntime.cs:632",
+      "Plugin/NativeRuntime.cs:646",
+      "Plugin/NativeRuntime.cs:701",
+      "Plugin/NativeRuntime.cs:731",
+      "Plugin/NativeRuntime.cs:848"
     ]
   }
 }

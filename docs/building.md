@@ -17,7 +17,7 @@ The package command checks the DLL version and makes a ZIP containing only the
 plugin DLL and a short `README.txt`. It does not install or launch anything.
 
 `Test.ps1` checks drive rules, CPU play choices, Stats, Scrimmage, first-snap
-counting and diagnostics.
+counting, first-down line ownership and diagnostics.
 These tests use local test data and do not open or patch the game.
 
 For generated native hooks and compatibility checks:

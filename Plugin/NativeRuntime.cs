@@ -268,7 +268,8 @@ namespace SituationalPractice
         {
             QueuePossessionDrive(drive,command,false);
             Write(data+12012,BitConverter.GetBytes(0));
-            // Rebuild the native picker when leaving the two-sided practice UI.
+            // Capture the first snap at native entry. Reuse both teams' valid
+            // cached plays, or finish initial play selection if either is absent.
             Write(data+12372,BitConverter.GetBytes(2));
         }
         private sealed class MenuEdit {public long Owner,Address,Vtable;public byte[] Original,Replacement;}
@@ -809,8 +810,8 @@ namespace SituationalPractice
             b.H("48b8");b.Q(image+0xf547a00);b.H("488b004885c0");b.J("0f84","unpaused");
             b.H("803800");b.J("0f85","native");
             b.Label("unpaused");
-            // Mode entry is a two-step transaction. Native stages 0/1 clear
-            // prior selections, so the UI notification must wait for stage 2.
+            // Custom-mode entry is a two-step transaction. Native stages 0/1
+            // clear selections, so its UI notification must wait for stage 2.
             b.H("418b82");b.I(12372);b.H("85c0");b.J("0f84","pendingUi");
             b.H("83f801");b.J("0f85","customRequest");
             b.H("41833a00");b.J("0f85","native");b.J("e9","place");
@@ -837,6 +838,16 @@ namespace SituationalPractice
             b.H("48b8");b.Q(image+0xf547540);b.H("488b084885c9");b.J("0f84","defaultHudDone");
             b.H("ba1400000041b00148b8");b.Q(image+0x369ed10);b.H("ffd0");
             b.Label("defaultHudDone");
+            // A mode change can keep the valid cached plays for both teams.
+            // Resume preplay directly instead of reopening a picker through
+            // the pause-menu flow. Only an incomplete initial selection needs UI.
+            b.H("49ba");b.Q(data);b.H("41833a01");b.J("0f84","enterCustomPicker");
+            b.Label("resumeMode");
+            b.H("48b8");b.Q(image+0xf8575a0);b.H("488b08ba0100000048b8");b.Q(image+0x5d0e950);b.H("ffd0");b.J("e9","uiDone");
+            b.Label("enterCustomPicker");
+            b.H("48b8");b.Q(image+0xfa582a0);b.H("488b004885c0");b.J("0f84","needModePicker");
+            b.H("6681b80c0500000101");b.J("0f84","resumeMode");
+            b.Label("needModePicker");
             b.H("48b8");b.Q(image+0xf8575a0);b.H("488b08ba0500000048b8");b.Q(image+0x5d0e950);b.H("ffd0");
             RestoreCallRegisters(b);b.J("e9","native");
             b.Label("pendingUi");
@@ -855,6 +866,7 @@ namespace SituationalPractice
             b.H("48b9");b.Q(image+0xdadd380);b.H("33d248b8");b.Q(image+0x7babdd0);b.H("ffd0");b.J("e9","uiDone");
             b.Label("customUi");b.H("48b9");b.Q(image+0xdadd380);b.H("33d248b8");b.Q(image+0x7babb30);b.H("ffd0");
             b.Label("uiDone");
+            b.H("49ba");b.Q(data);b.H("41c782");b.I(12448);b.I(0);
             b.H("49ba");b.Q(data);b.H("f041ff82");b.I(12384);b.H("418b42184189421c");
             RestoreCallRegisters(b);
             b.Label("native");b.H("415a589dc3");return b.Finish();
@@ -1059,10 +1071,15 @@ namespace SituationalPractice
         {
             long root=Long(image+0xf8abf80);if(root==0)return 0;
             long processor=Long(root+0xea28);if(processor==0)return 0;
-            if(Long(processor)!=image+0xb474928 || BitConverter.ToInt32(read(processor+0x20,4),0)!=26)return 0;
+            if(Long(processor)!=image+0xb474928)return 0;
             return processor;
         }
-        internal string State {get{return owned==0?"native":"owned processor=0x"+owned.ToString("x");}}
+        internal string State {get{
+            long current=Current();if(current==0)return "unavailable";
+            return "processor=0x"+current.ToString("x")+" owned="+(owned==current)
+                +" color="+BitConverter.ToInt32(read(current+0x20,4),0)+" override="+read(current+0x61,1)[0]
+                +" visible="+read(current+0x25,1)[0]+" line_m="+BitConverter.ToSingle(read(current+0x18,4),0).ToString("R",CultureInfo.InvariantCulture);
+        }}
         internal void Update(NativeSnapshot snap,bool enabled)
         {
             // Goal-to-go uses the painted goal line. Do not add a yellow line
@@ -1073,6 +1090,10 @@ namespace SituationalPractice
             long current=Current();
             if(current!=owned)owned=0; // Never write a former session's object.
             if(current==0){if(!reportedMissing){log("First-down line: native practice field processor unavailable; skipped.");reportedMissing=true;}return;}
+            int color=BitConverter.ToInt32(read(current+0x20,4),0);
+            // The same target slot uses FourthDownLine (35) on fourth down.
+            // Invalid (44) can appear briefly while the native slot is rebuilt.
+            if(color!=26 && color!=35){Restore();return;}
             reportedMissing=false;
             byte value=read(current+0x61,1)[0];
             if(value==1)return; // An existing override needs no ownership change.

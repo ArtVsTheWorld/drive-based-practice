@@ -51,21 +51,29 @@ available. The native menu scope is separate from the drive enable flag. Test
 all three modes, both user sides, timeouts, Choose New Play, re-spotting,
 turnovers/returns, mode changes and Stats. Returning to default practice must
 restore the native HUD flags and two-sided picker; entering a custom mode must
-rebuild its picker once, with no cached selection or penalty loop. Native mode
+finish selection once, with no penalty loop. When both native play-manager
+readiness bytes at +0x50c and +0x50d are 1, mode changes resume native preplay
+with the existing cached plays. Do not reopen a picker from the pause-menu flow.
+Choose New Play remains available. All custom-mode changes use this same entry.
+Native mode
 entry is applied at the safe preplay or play-selection update on the game thread.
-Mode entry must wait for play-selection initialization stage 2 before opening
+If no complete cached pair exists, custom-mode entry waits for initialization stage 2 before opening
 the picker; stages 0 and 1 can clear choices made too early. The pending UI
 request lives at offset 12448. The 64-bit refresh-helper address at 12392 must
 never overlap the 32-bit opponent-possession tag at 12028. Test calls through
 the full refresh address with both possession tags, including an address above 4 GB.
 The mode-entry thunk captures the pre-snap situation and completion counter in
 the shared block at offset 12400. It publishes the applied command only after
-opening the picker. Keep that order: the worker must retain a first result that
+opening the custom picker, or returning to native preplay for Default Practice.
+Keep that order: the worker must retain a first result that
 finishes before it observes the acknowledgement. Attach/recovery must also use
 the safe pre-snap entry, rather than waiting for an end-of-play reset.
 `NativeFirstDownLine` uses the practice FieldLineProcessor visibility override
 at +0x61. Resolve it through `[image+0xf8abf80]+0xea28`, check the practice vtable
-at 0xb474928 and first-down color enum 26 at +0x20. Practice deliberately skips
+at 0xb474928 and first-down color enum 26 or fourth-down enum 35 at +0x20.
+Invalid color 44 can appear while the slot is rebuilt. Keep processor identity
+separate from the color check so cleanup still recognizes an owned processor.
+Practice deliberately skips
 the normal first-down display check in 0x35bfd70; +0x61 enables the native line.
 The game clears the override during play transitions, so maintain it while a
 custom drive is active. Restore only the currently owned processor when leaving

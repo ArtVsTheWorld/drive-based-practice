@@ -90,8 +90,7 @@ namespace SituationalPractice
                 runtime.RequestNativeHud(true);
                 var fresh=starting.Copy();fresh.Down=1;fresh.Distance=Math.Min(10,100-fresh.Ball);
                 var drive=new PossessionDrive{Possession=snap.Possession,Spot=fresh,Score0=0,Score1=0};
-                if(wasDefault)runtime.QueueCustomModeStart(drive,++command);
-                else runtime.QueuePossessionDrive(drive,++command,snap.Phase!=1 && snap.Phase!=5);
+                runtime.QueueCustomModeStart(drive,++command);
                 pending=fresh;sideReset=true;
             }
             Log("Practice mode changed to "+next+"; fresh session, scores and stats reset.");
@@ -112,13 +111,18 @@ namespace SituationalPractice
             savedSpot=runtime.SavedPracticeSpot();
             lastError=null;
             if(session.Mode==PracticeMode.DefaultPractice){
-                runtime.UseDefaultPractice(false);seen=runtime.Completed;resumeUserTeam=-1;
+                runtime.UseDefaultPractice(resumeUserTeam>=0);seen=runtime.Completed;resumeUserTeam=-1;
                 Log("Default Practice ready. Pause > Mode selects Drive Practice or Scrimmage. No initialization play needed for normal practice.");return;
             }
             runtime.RequestNativeHud(true);
             if(resumeUserTeam>=0){
                 runtime.ResumeExistingSession(resumeUserTeam);userTeam=resumeUserTeam;previous=snap;seen=runtime.Completed;pending=null;
                 resumeUserTeam=-1;
+                if(snap.Phase==5){
+                    var spot=NativeDrivePolicy.StartingSpot(snap,true);
+                    runtime.QueueCustomModeStart(new PossessionDrive{Possession=snap.Possession,Spot=spot,Score0=snap.OffenseScore,Score1=snap.DefenseScore},++command);
+                    pending=spot;sideReset=true;previous=null;
+                }
                 if(refreshPicker)runtime.QueuePlayCall(userTeam);
                 Log("Explicit clean development handoff: current drive retained for user team "+userTeam+".");return;
             }
