@@ -860,6 +860,9 @@ namespace SituationalPractice
             b.H("418b82");b.I(12444);b.H("413b4218");b.J("0f85","native"); // captured command == current command
             b.H("41c782");b.I(12448);b.I(0);
             SaveCallRegisters(b);
+            // Default Practice must reopen its normal two-sided picker even
+            // when the custom mode left both teams with cached selections.
+            b.H("41833a00");b.J("0f84","modeNeedsPicker");
             b.H("48b8");b.Q(image+0xfa582a0);b.H("488b004885c0");b.J("0f84","modeNeedsPicker");
             b.H("6681b80c0500000101");b.J("0f84","resumeMode");
             b.Label("modeNeedsPicker");

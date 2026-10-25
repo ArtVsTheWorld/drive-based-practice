@@ -1639,6 +1639,32 @@ for team in [0,1]:
   checks+=1
 i(manager+0x50c,0)
 
+# Returning to Default Practice always opens the native two-sided picker,
+# including when both cached plays are ready. Never silently reuse a custom
+# mode's CPU selection (which may be a Hail Mary on offense).
+for team in [0,1]:
+ for phase in [1,5]:
+  for readiness in [0,1,0x100,0x101]:
+   practice_scope();i(D,0);i(D+12368,1);i(D+12372,1);i(D+12384,0)
+   i(D+12448,0);i(D+24,142);i(D+28,0);i(states+0xa0,phase);c.c_ubyte.from_address(pause).value=0
+   i(manager+0x50c,readiness);i(match+0x1c8,team);i(D+12048,0)
+   i(initial_state+0x10,0);i(D+44,1);f(D+36,-15);f(D+48,-5);i(D+84,0)
+   ui_calls.clear();native_ui_calls.clear();transition_calls.clear();cpu_calls.clear()
+   put(M,bytes.fromhex('4883ec28')+imm('48b8',restore_address)+bytes.fromhex('ffd04883c428c3'))
+   c.WINFUNCTYPE(None)(M)()
+   assert get(states+0xa0)==5 and get(D+28)==0 and not native_ui_calls
+   for stage in [0,1]:
+    i(initial_state+0x10,stage);c.WINFUNCTYPE(None)(M)()
+    assert get(D+28)==0 and not native_ui_calls
+   i(initial_state+0x10,2);c.WINFUNCTYPE(None)(M)()
+   assert native_ui_calls==[(B+0xdadd380,0)] and not ui_calls and not cpu_calls
+   assert transition_calls==[(states,5)] and get(states+0xa0)==5
+   assert get(D+28)==142 and get(D+12384)==1 and get(D+12448)==0
+   c.WINFUNCTYPE(None)(M)()
+   assert native_ui_calls==[(B+0xdadd380,0)] and get(D+12384)==1
+   checks+=1
+i(manager+0x50c,0)
+
 # Directly check volatile integer and vector preservation around native calls.
 practice_scope();i(D,0);i(D+12368,1);i(D+12372,1)
 i(states+0xa0,1);c.c_ubyte.from_address(pause).value=0

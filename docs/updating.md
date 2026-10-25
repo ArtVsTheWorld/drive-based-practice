@@ -52,11 +52,13 @@ all three modes, both user sides, timeouts, Choose New Play, re-spotting,
 turnovers/returns, mode changes and Stats. Returning to default practice must
 restore the native HUD flags and two-sided picker; entering a custom mode must
 finish selection once, with no penalty loop. When both native play-manager
-readiness bytes at +0x50c and +0x50d are 1, mode changes rebuild the lineup through
+readiness bytes at +0x50c and +0x50d are 1, changes into custom modes rebuild the lineup through
 native phase 5 initialization, then resume phase 1 with the existing cached plays.
 The phase-5 UI notification is suppressed only while the mode transaction is
 pending. Calling phase 1 while already in phase 1 skips native entry and leaves
-players unloaded. Do not reopen a picker from the pause-menu flow.
+players unloaded. Returning to Default Practice always opens its native two-sided
+picker after stage 2, including when both cached plays are ready. Never send
+that UI notification before native initialization finishes.
 Choose New Play remains available. All custom-mode changes use this same entry.
 Native mode
 entry is applied at the safe preplay or play-selection update on the game thread.
