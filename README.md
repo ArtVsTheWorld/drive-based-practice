@@ -46,7 +46,7 @@ no game clock, and kicking sequences are not supported. Logs and reports are in
 
 ## Source
 
-Current version: **0.8.18 beta**. Offensive personnel are not displayed
+Current version: **0.8.19**. Offensive personnel are not displayed
 while you choose a defensive play.
 
 [Build and test](docs/building.md) | [Updating after an EA patch](docs/updating.md)

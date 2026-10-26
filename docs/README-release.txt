@@ -1,4 +1,4 @@
-DRIVE-BASED PRACTICE 0.8.18 BETA
+DRIVE-BASED PRACTICE 0.8.19
 By Ace
 
 Put SituationalPractice.dll in MMC Mod Manager's Plugins folder. Restart MMC
@@ -25,6 +25,6 @@ have already selected one. Returning to Default Practice opens normal two-sided 
 The next snap counts normally. Use Choose New Play to change plays before the snap.
 
 The yellow first-down line is enabled in Drive Practice and Scrimmage.
-No timed games or kicking sequences in this beta.
+Timed games and kicking sequences are not included.
 Logs and crash reports are under Plugins/SituationalPractice.
 Offensive personnel are not displayed while you choose a defensive play.
