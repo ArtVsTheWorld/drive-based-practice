@@ -212,8 +212,8 @@ namespace SituationalPractice
                             operation="read native play completion";var events=runtime.Events();
                             foreach(var spot in events) {
                                 if(spot.Match!=snap.Match)continue;
-                                if(waitingResult!=0 && spot.Phase==4 && spot.Caller==0x5d6ccd1) {outcomeSpotted=true;settleAt=timer.ElapsedMilliseconds+80;}
-                                if(previous!=null && pending==null && spot.Phase==1 && spot.Caller==0x35e0cb2) {manualSpot=true;settleAt=timer.ElapsedMilliseconds+80;}
+                                if(waitingResult!=0 && spot.Phase==4 && spot.Caller==0x5d707a1) {outcomeSpotted=true;settleAt=timer.ElapsedMilliseconds+80;}
+                                if(previous!=null && pending==null && spot.Phase==1 && spot.Caller==0x35e33f2) {manualSpot=true;settleAt=timer.ElapsedMilliseconds+80;}
                             }
                             if(previous!=null && pending==null && manualSpot && snap.Phase==1 && timer.ElapsedMilliseconds>=settleAt) {
                                 RestartAtSavedSpot(snap,new[]{0f,snap.Ball-50,0f});

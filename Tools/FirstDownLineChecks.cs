@@ -14,8 +14,8 @@ class FirstDownLineChecks
     static NativeFirstDownLine Setup(byte value=0)
     {
         memory.Clear();writes=0;
-        Put(image+0xf8abf80,BitConverter.GetBytes(root));Put(root+0xea28,BitConverter.GetBytes(processor));
-        Put(processor,BitConverter.GetBytes(image+0xb474928));Put(processor+0x20,BitConverter.GetBytes(26));
+        Put(image+0xf8b3fd0,BitConverter.GetBytes(root));Put(root+0xea28,BitConverter.GetBytes(processor));
+        Put(processor,BitConverter.GetBytes(image+0xb47b048));Put(processor+0x20,BitConverter.GetBytes(26));
         Put(processor+0x61,new[]{value});
         return new NativeFirstDownLine(Read,Write,image,message=>{});
     }

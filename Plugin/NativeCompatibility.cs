@@ -14,55 +14,55 @@ namespace SituationalPractice
             internal readonly string Hash;
             internal Region(long rva,int length,string hash){Rva=rva;Length=length;Hash=hash;}
         }
-        // October 13 layout, from the inspected unmodified native memory capture.
+        // October 29 layout, from the inspected unmodified native memory capture.
         // Contiguous unwind fragments are joined; leaf routines have exact bounds.
         // Call Sheet / Dynasty Hooks redirect two complete five-byte CALLs at
-        // 0x7b7e964 (CommitPlay) and 0x35ff6ef (auto-playcall query). Exclude
+        // 0x7b82504 (CommitPlay) and 0x3601e2f (auto-playcall query). Exclude
         // only those instructions; retain every surrounding byte and all of
         // our hook entry checks. Gameplay hooks are unchanged.
         internal static readonly Region[] Regions={
-            new Region(0x7b7fb10, 40, "83d0b35ff29d488d4dba4324f735f2abbdf5f25d711aeaadd062d122fff833ed"),
-            new Region(0x35bfd70, 514, "9bcceac5bdf0299a678000a45bff93c5cc31b42d5b73f1458c0a79af609cccde"),
-            new Region(0x5fde170, 232, "8d7ee05083a27cb5c0bd9102869e26743136ac4b614a8f5fb53b33db0454e94d"),
-            new Region(0x2ad8410, 5, "22bdee30f3c1dd6de8568705cde8f9633bc6c8172fa06df18a8a27833dccb072"),
-            new Region(0x34864f0, 86, "40fcfa2d50110b60c6d554ec26abbf9d25820ed360b81c54f492ae7c0928adfd"),
-            new Region(0x35e0bf0, 445, "9300cda120ac586c107c8e5a640a1a27f6fcecfe5cfc41295911ead612e9b562"),
-            new Region(0x35e2110, 368, "bef4c25205a32fd866320561b6af10cb246eae3499e2df2ba478c97a17d73f5d"),
-            new Region(0x35fd200, 3356, "0c772e7ddb6adccf826fffa9a86b13e26c4aa19ecf50d1ddecd941e87edf1317"),
-            new Region(0x35feb00, 1561, "ce702b8004aabce023a6f6f7608bd9777eddb98de299ab5760fb624a5f2eda13"),
-            new Region(0x35ff120, 1487, "2cbdd2d9b512b2b26137b0a3f4bbf735e7150be010b6806ff816edd1aed69ed4"),
-            new Region(0x35ff6f4, 486, "b75c9e0f162adec8fdcdb6da06761a84325cf676d539c216401b0d2d6efb9ced"),
-            new Region(0x369ed10, 1211, "1e9fc55440fc81b7d20e78fc2a5e2eeb5147aaa4f151b12722ac9476fac58315"),
-            new Region(0x377bb40, 136, "58b5bad2cdbd0463c063ca033159db491f7e230b1340b6f9eb87993e79e1d62a"),
-            new Region(0x3f079e0, 8, "69e7fce1d328ba00990195f305b2cbfd9d531c2cb2296e3ad2f6c9d09d13f76c"),
-            new Region(0x4ff38d0, 1063, "7871d3ab1d41d24c7a1dba46083bc6b90920cd6385bf3f2be98f81636b470898"),
-            new Region(0x4ff3d10, 262, "27bbdba8b5598ee7fb9ef7311b0a4364b6a60a9ead8258b77fb08af1f4e38468"),
-            new Region(0x4ff3ff0, 783, "8d132f675d22ead45ec87b1977e3db0f8813e63cc6245596abdd725381ce7956"),
-            new Region(0x4ff5520, 89, "ced0ab5c750d4eab197f6b378237d7fa95a0319ae04975c6cfede1c7af15feec"),
-            new Region(0x5d0e950, 271, "df30a65c0ed3b7445ed82515423e78820b137160b245c2585144f7f793b8cfa6"),
-            new Region(0x5d49e30, 516, "898f431b3623a26c95d01849263c81edb0500a3a5f90aae9e8bc22c93070619e"),
-            new Region(0x5d59530, 62, "427eb7d7ded1238d359369e66501f52b760c4f5c535a0d6cfbe6d681c4c94fc3"),
-            new Region(0x5d59570, 79, "eb36eee844a9e2fd15a637a4c31158d1281be86624703a92ddc7fef486643216"),
-            new Region(0x5d595c0, 1156, "6f4b1e7aa31a58c7f6e3f984f2a735a8904fb76bac1e4f8bb67a4c20c0eea86c"),
-            new Region(0x5d5aaa0, 1053, "738acdfd283f0db82d82e3eb53e8368fac643e96b64fe3724a0013b12a186434"),
-            new Region(0x5d6ca80, 2019, "948c4382fe090dbb7901175e5f47f9c52967ed8512ba7ae3f7f578f2538515aa"),
-            new Region(0x5d70850, 7044, "17212aa321020f9b9c9494911593afa9fe0c5815dbab3a1a55d55bd2fd8db301"),
-            new Region(0x5f09980, 690, "5f114ba1e0e1ef320957786b178c7b59a417b9081e2f6c51eed49c55ab38686f"),
-            new Region(0x7b7e7e0, 388, "c6122c6718de854a9248c59da20d9e00f7bafcbfe92ecaf2a8d7b49f9aab2c78"),
-            new Region(0x7b7e969, 44, "f6833726ace23cb818a8b684a30222a1c7f1de3e89d59b363525ea4923123a98"),
-            new Region(0x7b99d90, 561, "d7a7682669134a579f6497adc6a7c82f5afac8ae81f09bfca759e320e8deaabe"),
-            new Region(0x7babb30, 168, "1c30538c67b9501e8eab43e24d7f1f7d920a2702bcaf5d810af171df7e077d01"),
-            new Region(0x7babda0, 103, "0d6b6566e4a0ded35c297957bea100d6519ea18e3a1be3095a2039519641d2cf"),
-            new Region(0xae33f50, 16, "231f5cecc61699ca90f5e9acdbc4c47552f66daeb7ef55327cb7574cda9f29e5"),
-            new Region(0xbab08c0, 16, "0f023d55ec1805f2c2fbbc1debe1075cfc153ebb81b7814f6f5b9bf7d613146b"),
-            new Region(0xbab08d0, 16, "50ec86dca0a9e4d7818f30e38545007351cfd8c06883650b09d93f2789a41c3c"),
-            new Region(0xbab08e0, 16, "27d6d18d488331575c4684105e46a16e69d9aa9c7b503590130d7081ec229bae"),
-            new Region(0xbab08f0, 16, "c8a6e2851fe308ff9d0e7ce942774e14ca5d4f0655acf8167eae615207bae265"),
-            new Region(0x5d59f20, 63, "c5978db6a878cad23828e7979ca2c121c2a65c2de8f9e75809512294e6ebb65c"),
-            new Region(0x7bcad50, 72, "c3995397a1556d7bc7d98e5121d66595761e329c7b13a0ac81eb3e4a9f49e856"),
-            new Region(0x7c17d20, 8, "60c3957b029169115f5315a518c127beb7315eef963c9c5876a8bbb4e957d577"),
-            new Region(0x25a3060, 168, "532f15d1353f4f26cab4cabbd6d044fb27fcd1cb259953136d3d860b3c760686"),
-            new Region(0x5d4a660, 596, "89f80498ab9361e6d08b22e6c39d054dafdc77f049fe2a017661f08343883fb1"),
+            new Region(0x7b836b0, 40, "83d0b35ff29d488d4dba4324f735f2abbdf5f25d711aeaadd062d122fff833ed"),
+            new Region(0x35c24b0, 514, "917b60c8b6b3f6bf22d8ec15f3ead404f4523e9a6290dbb2a7f7bf97de3a30f0"),
+            new Region(0x5fe1bd0, 232, "48df33cbf4b296ba01a977a4537df3200d9a4611e06d3bbbb2f464e7b6ad5b72"),
+            new Region(0x2ad9200, 5, "22bdee30f3c1dd6de8568705cde8f9633bc6c8172fa06df18a8a27833dccb072"),
+            new Region(0x34875e0, 86, "40fcfa2d50110b60c6d554ec26abbf9d25820ed360b81c54f492ae7c0928adfd"),
+            new Region(0x35e3330, 445, "274d26d97b136ef7f555c8540978c0863ca9d3d879513d2fcd62436a0ccc3087"),
+            new Region(0x35e4850, 368, "fa3ee8d6e4e77029f23e1b5560852ae6a4daf9987a7b761f7a2602ab7ad1c909"),
+            new Region(0x35ff940, 3356, "0d81a9a969cbcce0a673fe1cc3eab4cf7334acfeb171d9bc22e892e58e84db0e"),
+            new Region(0x3601240, 1561, "f4b9e86fc67ecf26702a8098a54af15f5f680be842c6c7a297967bd297fe121e"),
+            new Region(0x3601860, 1487, "bc8f225aaceb454dbe417f10f05f0e413a9c36eb90793812af6c062896f86daa"),
+            new Region(0x3601e34, 486, "4127a282d9d904bcdac574a39a02e90f7a2055c0aef219a1844b20cccb8cba03"),
+            new Region(0x36a1450, 1211, "1fc0e1558f537fd762ecbf32e95d188188c9f78e3f6c33227a80f644164f74a7"),
+            new Region(0x377e340, 136, "3f56c3b2bcd0d5bd6cba8f602c80356094b300ff1c376762a68017369f4f9c0f"),
+            new Region(0x3f0a300, 8, "6dd01991fadf6f57785ac911ed232130421e67baf1c8524a86b3f716e6c8beb8"),
+            new Region(0x4ff6fc0, 1063, "37612e52c7247126114b553fb299d33d7993c14f9bd988d9ca26c021dcd8a7d9"),
+            new Region(0x4ff7400, 262, "9652ed5cfe52a4ecf9cc3c83baef6f3afd18a8c9f4289723abcd495c9d262512"),
+            new Region(0x4ff76e0, 783, "6c6acfe612bce7bbb7fdd06c9733b297053e79ad38d959613a36e020baf73c56"),
+            new Region(0x4ff8c10, 89, "5512402dec41f3e9dac2e2d469d82636aad556906937d29d21ad118f15d989f2"),
+            new Region(0x5d12420, 271, "938744e5509d3b476f1ccfd80740fcce961c2e3940ddac1230dd74c949478774"),
+            new Region(0x5d4d900, 516, "ad65b803b3ee886cb75549039de0096d9a26b10f6dab6f365c7b723ac7221ae6"),
+            new Region(0x5d5d000, 62, "a197bbdfaaa5600b15535647e1f21decc7eba8c988b1c3b0ffa4e65f956eb554"),
+            new Region(0x5d5d040, 79, "0ef5dbb7f79e6ac8a51e38282734b68e6932a99ab978830736f51ad5bba4bc04"),
+            new Region(0x5d5d090, 1156, "23b7e404b2b9a4377732df9f04b7c0a018a65d8f2a403472b4628d725630ae70"),
+            new Region(0x5d5e570, 1053, "fac2d4ec406b868650d8233c4a2ea93fc9434c7706bda95eed80d86710d26655"),
+            new Region(0x5d70550, 2019, "7cef7aa1fea5362637c03a1eacea529207f4e401a64c04b320325adc945bc47c"),
+            new Region(0x5d74320, 7044, "53f660da6e71d2ee3a81df2282ca8d4a80dfb618ed05a34fa4f34a81920af851"),
+            new Region(0x5f0d5c0, 690, "ac873634d791e9aeae6ea34021e730f7a82192992842e2b64051edf70b1e14a1"),
+            new Region(0x7b82380, 388, "84849acc2335d10ff0eef36eddf3281b2051fa5d32416001c75e4720bc1c11c7"),
+            new Region(0x7b82509, 44, "4303b38a74a0bea03a4ff9ddb9aee117771868dfdd67d70cd59c9fb46fecfddb"),
+            new Region(0x7b9d930, 561, "9a64e3c3e93ae5691323e4337dc697af5caabd090aa92fbb5bd5e4837af2db83"),
+            new Region(0x7baf6d0, 168, "cf2ccaf8f011f8a9e4771c68ff28faa8814be5b0c3a77bae3fc979d80fec298d"),
+            new Region(0x7baf940, 103, "b0c02742cb9f74fe00ea029aaea8afe15f336e260dd0c50209ecf44ce8c009f3"),
+            new Region(0xae3a190, 16, "231f5cecc61699ca90f5e9acdbc4c47552f66daeb7ef55327cb7574cda9f29e5"),
+            new Region(0xbab7020, 16, "0f023d55ec1805f2c2fbbc1debe1075cfc153ebb81b7814f6f5b9bf7d613146b"),
+            new Region(0xbab7030, 16, "50ec86dca0a9e4d7818f30e38545007351cfd8c06883650b09d93f2789a41c3c"),
+            new Region(0xbab7040, 16, "27d6d18d488331575c4684105e46a16e69d9aa9c7b503590130d7081ec229bae"),
+            new Region(0xbab7050, 16, "c8a6e2851fe308ff9d0e7ce942774e14ca5d4f0655acf8167eae615207bae265"),
+            new Region(0x5d5d9f0, 63, "32077d3f7b44fdc7a18800dcbba2bffa94a37e11bb1f581f5badecd62a8a0a90"),
+            new Region(0x7bce8f0, 72, "96b0fe3e0c1ab4f1090ffbd8ac49c1ceb9e71a529035eaefe848f7663003d96a"),
+            new Region(0x7c1b8c0, 8, "0114f7b6fcd000b5da40a5c37b9d506e68f1cdf1c2833b4d71ee5dfc6a46b008"),
+            new Region(0x25a3e60, 168, "3b8537229ab2aeee3325e5057944c424b3864ef14094bae8da1e0bd2bd142645"),
+            new Region(0x5d4e130, 596, "af69acf3614208e7d1d0bc794c6b9891518848a4d3c8a6286f886ad9acf8acf5"),
         };
         internal static void Verify(Func<long,int,byte[]> read,long image)
         {
@@ -70,6 +70,7 @@ namespace SituationalPractice
                 byte[] bytes=read(image+region.Rva,region.Length);
                 if(bytes==null || bytes.Length!=region.Length)
                     throw new InvalidOperationException("Cannot read required native code at RVA "+region.Rva.ToString("x")+". No hooks installed.");
+                if(region.Rva==0x5d12420)bytes=DynastyControllerCompatibility.Normalize(read,image,bytes);
                 string actual=BitConverter.ToString(sha.ComputeHash(bytes)).Replace("-","").ToLowerInvariant();
                 if(actual!=region.Hash)
                     throw new InvalidOperationException("Required native code differs at RVA "+region.Rva.ToString("x")+" (expected "+region.Hash+", actual "+actual+"). Waiting for compatible decrypted code; no hooks installed.");

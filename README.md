@@ -2,6 +2,8 @@
 
 By Ace. Offline Dynasty practice for College Football 27.
 
+Updated for the October 29, 2026 game patch.
+
 Keep normal practice, or switch to drives and scrimmage with ball movement, downs,
 the in-game scoreboard and session stats.
 
@@ -46,7 +48,7 @@ no game clock, and kicking sequences are not supported. Logs and reports are in
 
 ## Source
 
-Current version: **0.8.19**. Offensive personnel are not displayed
+Current version: **0.8.20**. Offensive personnel are not displayed
 while you choose a defensive play.
 
 [Build and test](docs/building.md) | [Updating after an EA patch](docs/updating.md)

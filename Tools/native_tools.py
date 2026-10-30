@@ -207,7 +207,7 @@ def fixtures(args):
             raise SystemExit(f'Baseline mismatch at {item["rva"]}; fixtures were not written.')
         chunks.append(data)
     (ROOT / 'Tools/compatibility-reference.bin').write_bytes(b''.join(chunks))
-    calls = b''.join(pe.d[pe.off(rva):pe.off(rva) + 5] for rva in [0x35ff6ef, 0x7b7e964])
+    calls = b''.join(pe.d[pe.off(rva):pe.off(rva) + 5] for rva in [0x3601e2f, 0x7b82504])
     (ROOT / 'Tools/callsheet-call-reference.bin').write_bytes(calls)
     print('Generated local compatibility fixtures. These files are gitignored.')
 

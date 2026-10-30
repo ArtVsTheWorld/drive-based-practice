@@ -1,6 +1,6 @@
 # After an EA update
 
-The current code targets the October 13, 2026 native layout. A game update can move
+The current code targets the October 29, 2026 native layout. A game update can move
 functions, globals, vtables and jump tables by different amounts. A single address
 offset is not enough.
 
@@ -77,12 +77,12 @@ Keep that order: the worker must retain a first result that
 finishes before it observes the acknowledgement. Attach/recovery must also use
 the safe pre-snap entry, rather than waiting for an end-of-play reset.
 `NativeFirstDownLine` uses the practice FieldLineProcessor visibility override
-at +0x61. Resolve it through `[image+0xf8abf80]+0xea28`, check the practice vtable
-at 0xb474928 and first-down color enum 26 or fourth-down enum 35 at +0x20.
+at +0x61. Resolve it through `[image+0xf8b3fd0]+0xea28`, check the practice vtable
+at 0xb47b048 and first-down color enum 26 or fourth-down enum 35 at +0x20.
 Invalid color 44 can appear while the slot is rebuilt. Keep processor identity
 separate from the color check so cleanup still recognizes an owned processor.
 Practice deliberately skips
-the normal first-down display check in 0x35bfd70; +0x61 enables the native line.
+the normal first-down display check in 0x35c24b0; +0x61 enables the native line.
 The game clears the override during play transitions, so maintain it while a
 custom drive is active. Restore only the currently owned processor when leaving
 the mode; never write a saved pointer after the processor changes. Goal-to-go
@@ -90,8 +90,8 @@ must retain the painted goal line without an extra yellow line. Test re-entry,
 mode changes, both possession directions, first downs, losses and re-spotting.
 Kicking sequences are still unsupported.
 
-Call Sheet compatibility excludes only the five-byte calls at `0x35ff6ef` and
-`0x7b7e964` in the current layout. The surrounding code and owned hook sites remain
+Call Sheet compatibility excludes only the five-byte calls at `0x3601e2f` and
+`0x7b82504` in the current layout. The surrounding code and owned hook sites remain
 checked. Re-establish those exclusions from the new code after an update.
 
 CPU selection uses the existing post-user-choice flow on both sides. The
@@ -99,3 +99,14 @@ experimental early-offense and personnel-widget logic was removed in 0.8.18
 after the native widget still failed to render in practice. Do not restore its
 controller-binding reads, UI notifications or extra helper block as part of a
 relocation update. The confirmed Default Practice readiness fix remains.
+
+
+Offline Dynasty Settings 0.2.9 redirects the native phase setter whose surrounding
+region practice also verifies. DynastyControllerCompatibility.cs recognizes only
+that exact version's four generated bridge bodies, commit vtable pointer and
+eligibility detour. It normalizes only the 15-byte setter entry in a local copy
+before the original region hash is checked; the native function tail remains
+covered. Unknown entries, changed bodies or a changed tail still refuse activation.
+Refresh its generated contract from Offline Dynasty Settings ControllerSelectCode.cs
+when that bridge changes. CompatibilityChecks covers both install orders, ASLR,
+every bridge body and an altered native tail. No game code is skipped blindly.

@@ -5,7 +5,7 @@ $compiler=Join-Path $env:WINDIR 'Microsoft.NET\Framework64\v4.0.30319\csc.exe'
 Push-Location $root
 try {
     New-Item -ItemType Directory -Path Evidence -Force | Out-Null
-    $common=@('Plugin/DriveEngine.cs','Plugin/NativeRuntime.cs','Plugin/NativeCompatibility.cs','Plugin/NativeDrivePolicy.cs','Plugin/SessionStats.cs','Plugin/DefenseChoice.cs','Plugin/Diagnostics.cs')
+    $common=@('Plugin/DriveEngine.cs','Plugin/NativeRuntime.cs','Plugin/NativeCompatibility.cs','Plugin/DynastyControllerCompatibility.cs','Plugin/NativeDrivePolicy.cs','Plugin/SessionStats.cs','Plugin/DefenseChoice.cs','Plugin/Diagnostics.cs')
     function Run-Check([string]$Name) {
         $output=[IO.Path]::GetFullPath((Join-Path $root ('Evidence/'+$Name+'.exe')))
         $sources=@($common | ForEach-Object {[IO.Path]::GetFullPath($_.Replace('/','\'))})

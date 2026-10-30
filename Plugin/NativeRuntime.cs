@@ -68,7 +68,7 @@ namespace SituationalPractice
             text.AppendLine("early_picker_transitions="+Int(data+12360)+" last_endplay_caller=0x"+(Long(data+12080)-image).ToString("x")+" endplay_phase="+Int(data+12088));
             text.AppendLine("mode_requests="+ModeRequests+" possession_pending="+Int(data+12048)+" possession_target="+Int(data+12052));
             text.AppendLine("mode_menu_enabled="+Int(data+12368)+" mode_entry_pending="+Int(data+12372)+" mode_entries_applied="+Int(data+12384)+" mode_ui_pending="+Int(data+12448));
-            long pause=Long(image+0xf547a00);text.AppendLine("native_pause="+(pause==0?"none":Read(pause,1)[0].ToString())+" refresh_entry=0x"+Long(data+RefreshEntryOffset).ToString("x"));
+            long pause=Long(image+0xf54fa00);text.AppendLine("native_pause="+(pause==0?"none":Read(pause,1)[0].ToString())+" refresh_entry=0x"+Long(data+RefreshEntryOffset).ToString("x"));
             text.AppendLine("drive_start_command="+Int(data+12444)+" drive_start_completed="+Int(data+12440));
             text.AppendLine("first_down_line="+(firstDownLine==null?"inactive":firstDownLine.State));
             text.AppendLine("match=0x"+snap.Match.ToString("x")+" states=0x"+snap.States.ToString("x")+" controller=0x"+BitConverter.ToInt64(block,8).ToString("x"));
@@ -77,7 +77,7 @@ namespace SituationalPractice
             text.AppendLine("chooser_requested="+BitConverter.ToInt32(block,164)+" user_team="+BitConverter.ToInt32(block,168)+" choice_consumed="+BitConverter.ToInt32(block,180)+" cpu_payload_ready="+BitConverter.ToInt32(block,200));
             text.AppendLine("user_identity_known="+Int(data+12012)+" cpu_readiness_mask="+Int(data+12008)+" cpu_payload_possession="+Int(data+OpponentPossessionOffset)+" cpu_formation_kind="+BitConverter.ToInt32(block,220));
             text.AppendLine("cpu_choices="+BitConverter.ToInt32(block,184)+" setup_choices="+BitConverter.ToInt32(block,188)+" setup_consumed="+BitConverter.ToInt32(block,192)+" filtered_commits="+BitConverter.ToInt32(block,248)+" manual_spot_pending="+BitConverter.ToInt32(block,252));
-            long manager=Long(image+0xfa582a0),service=Long(image+0xf8abb50);
+            long manager=Long(image+0xfa602a0),service=Long(image+0xf8b3ba0);
             if(manager!=0){byte[] ready=Read(manager+0x50c,2);text.AppendLine("manager=0x"+manager.ToString("x")+" selected_teams="+ready[0]+","+ready[1]);}
             if(service!=0)text.AppendLine("playcall_service=0x"+service.ToString("x")+" service_flags=0x"+Int(service+0x28).ToString("x"));
             if(snap.Phase==5 || snap.Phase==6){
@@ -90,12 +90,12 @@ namespace SituationalPractice
         }
         public float[] SavedPracticeSpot()
         {
-            Snapshot();long configuration=Long(image+0xf6379e0);
+            Snapshot();long configuration=Long(image+0xf63f9f0);
             return new[]{Float(configuration+0x70),Float(configuration+0x74),Float(configuration+0x78)};
         }
-        public static readonly long[] Sites={0x4ff39ce,0x4ff39fb,0x4ff3d66,0x5d595c0,0x369ed10,0x5d59570,0x377bb40,0x7b99d90,0x5d49e30,0x35ff120,0x7babdd0,0x35fd200,0x35feb00,0x7bcad50,0x25a3060,0x5d4a660};
-        public static readonly byte[][] Originals={Hex("4038b3960000007424488b05d23c860a"),Hex("4038b3940000000f848f000000488b05a13c860a"),Hex("80bb94000000000f8490000000488b053639860a"),Hex("488bc44889580848897010574881ecd0000000"),Hex("40554883ec6048899c2480000000"),Hex("4883ec488b81c0010000c5f829742430"),Hex("40534883ec40488b01488d542430"),Hex("48895c240848896c24104889742418"),Hex("4883ec3880b9fc000000000f85ee010000"),Hex("4c8bdc5553564155498d6ba14881ecd8000000"),Hex("4883ec38c6814904000001e800bc35fc"),Hex("c5fa114c2410554157488d6c24b1"),Hex("405556488bec4883ec78488bf1e8fe984dff"),Hex("40534883ec2041b902000000488d0db5a9f103"),Hex("48895c24104889742418574883ec40"),Hex("48895c240848896c24104889742418")};
-        private static readonly long[] Skips={0x4ff39fb,0x4ff3a97,0x4ff3e03};
+        public static readonly long[] Sites={0x4ff70be,0x4ff70eb,0x4ff7456,0x5d5d090,0x36a1450,0x5d5d040,0x377e340,0x7b9d930,0x5d4d900,0x3601860,0x7baf970,0x35ff940,0x3601240,0x7bce8f0,0x25a3e60,0x5d4e130};
+        public static readonly byte[][] Originals={Hex("4038b3960000007424488b053286860a"),Hex("4038b3940000000f848f000000488b050186860a"),Hex("80bb94000000000f8490000000488b059682860a"),Hex("488bc44889580848897010574881ecd0000000"),Hex("40554883ec6048899c2480000000"),Hex("4883ec488b81c0010000c5f829742430"),Hex("40534883ec40488b01488d542430"),Hex("48895c240848896c24104889742418"),Hex("4883ec3880b9fc000000000f85ee010000"),Hex("4c8bdc5553564155498d6ba14881ecd8000000"),Hex("4883ec38c6814904000001e880a935fc"),Hex("c5fa114c2410554157488d6c24b1"),Hex("405556488bec4883ec78488bf1e8ae7f4dff"),Hex("40534883ec2041b902000000488d0d75d5f103"),Hex("48895c24104889742418574883ec40"),Hex("48895c240848896c24104889742418")};
+        private static readonly long[] Skips={0x4ff70eb,0x4ff7187,0x4ff74f3};
         public NativeRuntime(int pid,Action<string> log):this(pid,log,true){}
         private NativeRuntime(int pid,Action<string> log,bool install)
         {
@@ -108,10 +108,10 @@ namespace SituationalPractice
                 NativeCompatibility.Verify(Read,image);
                 firstDownLine=new NativeFirstDownLine(Read,Write,image,log);
                 NativeSnapshot snap=Snapshot();
-                if(Long(snap.Match)!=image+0xb4781e8 || Long(snap.States)!=image+0xb479070)
+                if(Long(snap.Match)!=image+0xb47e908 || Long(snap.States)!=image+0xb47f790)
                     throw new InvalidOperationException("Native match/state layout does not match.");
-                long playCall=Long(image+0xfa582a0);
-                if(playCall==0 || Long(Long(playCall)+0x2c8)!=image+0x7b7e7e0)
+                long playCall=Long(image+0xfa602a0);
+                if(playCall==0 || Long(Long(playCall)+0x2c8)!=image+0x7b82380)
                     throw new InvalidOperationException("Native CPU play selector does not match.");
                 for(int i=0;i<Sites.Length;i++)
                     if(!Equal(Read(image+Sites[i],Originals[i].Length),Originals[i]))
@@ -181,10 +181,10 @@ namespace SituationalPractice
         }
         public NativeSnapshot Snapshot()
         {
-            long configuration=Long(image+0xf6379e0);
-            if(Int(image+0xd9e3818)!=14 || Int(image+0xf3f5d48)!=3 || configuration==0 || Read(configuration+0x84,1)[0]!=1)
+            long configuration=Long(image+0xf63f9f0);
+            if(Int(image+0xd9eb808)!=14 || Int(image+0xf3fddbc)!=3 || configuration==0 || Read(configuration+0x84,1)[0]!=1)
                 throw new InvalidOperationException("Waiting for offline Dynasty practice.");
-            long wrapper=Long(image+0xf8576b0), states=Long(image+0xf8575a0);
+            long wrapper=Long(image+0xf85f700), states=Long(image+0xf85f5f0);
             if(wrapper==0 || states==0)throw new InvalidOperationException("Waiting for an offline Dynasty session.");
             long match=Long(wrapper+16);
             if(match==0)throw new InvalidOperationException("Waiting for an offline Dynasty session.");
@@ -196,7 +196,7 @@ namespace SituationalPractice
         }
         private int[] ReadPlayEvents()
         {
-            long events=Long(image+0xf856ef8);if(events==0)return new int[0];
+            long events=Long(image+0xf85ef48);if(events==0)return new int[0];
             int count=Int(events+0x116f8);if(count<0 || count>256)throw new InvalidOperationException("Invalid native event list.");
             var types=new List<int>();
             for(int i=count-1;i>=0;i--){int type=Int(events+0x10+i*0x110);types.Add(type);if(type==2)break;}
@@ -222,12 +222,12 @@ namespace SituationalPractice
         public void FindStatsMenu()
         {
             if(Long(data+120)!=0)return;
-            long pause=Long(image+0xf553bb0);if(pause==0)return;
+            long pause=Long(image+0xf55bbb0);if(pause==0)return;
             long ui=Long(pause+0x78);if(ui==0)return;long repo=Long(ui+0xf8);if(repo==0)return;
-            if(Long(repo)!=image+0xb6467d0)return;
+            if(Long(repo)!=image+0xb64cf30)return;
             long begin=Long(repo+0x88),end=Long(repo+0x90);
             if(begin==0 || end<begin || end-begin>4096 || (end-begin)%16!=0)return;
-            for(long entry=begin;entry<end;entry+=16){long panel=Long(entry);if(panel==0 || Long(panel)!=image+0xb646440)continue;
+            for(long entry=begin;entry<end;entry+=16){long panel=Long(entry);if(panel==0 || Long(panel)!=image+0xb64cba0)continue;
                 string name=Encoding.ASCII.GetString(Read(panel+0x30,64)).Split('\0')[0];
                 if(name=="nested_teamstats"){
                     long condition=Long(panel+0x29d8);if(condition==0)return;
@@ -289,29 +289,29 @@ namespace SituationalPractice
         public void FindModeMenu(PracticeMode mode)
         {
             int phase=Snapshot().Phase;if(phase!=1 && phase!=5)return;
-            long pause=Long(image+0xf553bb0);if(pause==0)return;
-            long ui=Long(pause+0x78);if(ui==0)return;long repo=Long(ui+0xf8);if(repo==0 || Long(repo)!=image+0xb6467d0)return;
+            long pause=Long(image+0xf55bbb0);if(pause==0)return;
+            long ui=Long(pause+0x78);if(ui==0)return;long repo=Long(ui+0xf8);if(repo==0 || Long(repo)!=image+0xb64cf30)return;
             if(modePanel!=0 && repo!=modeRepository){modePanel=modeTile=0;modeTexts.Clear();menuEdits.Clear();Write(data+12040,new byte[8]);Write(data+12056,new byte[16]);}
             if(modePanel==0){
                 long begin=Long(repo+0x88),end=Long(repo+0x90);
                 if(begin==0 || end<begin || end-begin>4096 || (end-begin)%16!=0)return;
-                for(long entry=begin;entry<end;entry+=16){long panel=Long(entry);if(panel==0 || Long(panel)!=image+0xb646440)continue;
+                for(long entry=begin;entry<end;entry+=16){long panel=Long(entry);if(panel==0 || Long(panel)!=image+0xb64cba0)continue;
                     string name=Encoding.ASCII.GetString(Read(panel+0x30,64)).Split('\0')[0];if(name!="nested_practicetype")continue;
                     long head=panel+0x1e8;var nodes=new Stack<long>();var seenNodes=new HashSet<long>();nodes.Push(Long(head+16));
                     while(nodes.Count>0 && seenNodes.Count<64){long node=nodes.Pop();if(node==0 || node==head || !seenNodes.Add(node))continue;
                         nodes.Push(Long(node));nodes.Push(Long(node+8));long container=Long(node+0x38);
-                        if(container==0 || Long(container)!=image+0xb646318)continue;
+                        if(container==0 || Long(container)!=image+0xb64ca78)continue;
                         long tiles=Long(container+0xc58),tilesEnd=Long(container+0xc60);
                         if(tiles==0 || tilesEnd<tiles || tilesEnd-tiles>8192 || (tilesEnd-tiles)%16!=0)continue;
-                        for(long t=tiles;t<tilesEnd;t+=16){long tile=Long(t);if(tile==0 || Long(tile)!=image+0xb6465a0)continue;
+                        for(long t=tiles;t<tilesEnd;t+=16){long tile=Long(t);if(tile==0 || Long(tile)!=image+0xb64cd00)continue;
                             string action=Encoding.ASCII.GetString(Read(tile+0xd50,60)).Split('\0')[0];if(action!="PRACTICE_CHOOSE_TYPE")continue;
                             long texts=Long(tile+0xbf8),textsEnd=Long(tile+0xc00);
                             if(texts==0 || textsEnd-texts<32 || textsEnd-texts>256 || (textsEnd-texts)%16!=0)continue;
                             long title=Long(texts),descriptionText=Long(texts+16);
-                            if(Long(title)!=image+0xb646598 || Long(descriptionText)!=image+0xb646598 || Int(title+0x188)!=0 || Int(descriptionText+0x188)!=0)continue;
+                            if(Long(title)!=image+0xb64ccf8 || Long(descriptionText)!=image+0xb64ccf8 || Int(title+0x188)!=0 || Int(descriptionText+0x188)!=0)continue;
                             long condition=Long(panel+0x29d8);if(condition==0)continue;
                             modePanel=panel;modeTile=tile;modeRepository=repo;modeTexts.Add(title);modeTexts.Add(descriptionText);
-                            MenuText(tile,0xd50,0xb6465a0,"CHALLENGE_PLAY",60);
+                            MenuText(tile,0xd50,0xb64cd00,"CHALLENGE_PLAY",60);
                             Write(data+12040,BitConverter.GetBytes(condition));log("Native practice mode toggle bound to pause menu.");break;
                         }
                     }
@@ -321,14 +321,14 @@ namespace SituationalPractice
             if(modePanel==0)return;
             string label=PracticeModes.Label(mode);
             string description=PracticeModes.Description(mode);
-            MenuText(modePanel,0x70,0xb646440,label,64);
+            MenuText(modePanel,0x70,0xb64cba0,label,64);
             // Native data binding refreshes these TextMedia objects on every
             // menu draw. Substitute only their serialized values, after that
             // refresh, rather than competing with its writes from this loop.
             byte[] labelBytes=new byte[64],descriptionBytes=new byte[192];
             Encoding.ASCII.GetBytes(label).CopyTo(labelBytes,0);Encoding.ASCII.GetBytes(description).CopyTo(descriptionBytes,0);
             Write(data+12100,labelBytes);Write(data+12164,descriptionBytes);
-            if(Long(modeTexts[0])!=image+0xb646598 || Long(modeTexts[1])!=image+0xb646598)
+            if(Long(modeTexts[0])!=image+0xb64ccf8 || Long(modeTexts[1])!=image+0xb64ccf8)
                 throw new InvalidOperationException("Native mode menu text ownership changed.");
             Write(data+12056,BitConverter.GetBytes(modeTexts[0]+0x38));Write(data+12064,BitConverter.GetBytes(modeTexts[1]+0x38));
         }
@@ -366,7 +366,7 @@ namespace SituationalPractice
         public void ResumeExistingSession(int userTeam)
         {
             var snap=Snapshot();if(snap.Phase==3)throw new InvalidOperationException("Wait until the current play ends.");
-            Write(data+16,BitConverter.GetBytes(snap.Match));Write(data+8,BitConverter.GetBytes(Long(image+0xf6379e0)));
+            Write(data+16,BitConverter.GetBytes(snap.Match));Write(data+8,BitConverter.GetBytes(Long(image+0xf63f9f0)));
             ConfigureUserTeam(userTeam);Write(data+12012,BitConverter.GetBytes(1));SetEnabled(true);
         }
         private readonly Random defenseRandom=new Random();
@@ -407,7 +407,7 @@ namespace SituationalPractice
         {
             if(snap.Match!=Long(data+16) || snap.Phase!=5 || Int(data+180)!=0 || Int(data+200)!=0)return;
             long state=Long(snap.States+0x58);if(state==0 || Int(state+0x10)!=2)return;
-            long manager=Long(image+0xfa582a0),service=Long(image+0xf8abb50),bus=Long(image+0xe2cb918);
+            long manager=Long(image+0xfa602a0),service=Long(image+0xf8b3ba0),bus=Long(image+0xe2d3918);
             if(manager==0 || service==0 || bus==0)return;
             int flags=Int(service+0x28),user;
             if(!PracticeSide.TryUserTeam(snap.Possession,flags,Int(data+12012)!=0?UserTeam:-1,out user))return;
@@ -481,8 +481,8 @@ namespace SituationalPractice
         {
             Snapshot();
             if(enabled && hudVisibility==null) {
-                hudVisibility=new byte[]{Read(image+0xdadd921,1)[0],Read(image+0xdadd924,1)[0]};
-                Write(image+0xdadd921,new byte[]{0});Write(image+0xdadd924,new byte[]{0});
+                hudVisibility=new byte[]{Read(image+0xdae5a21,1)[0],Read(image+0xdae5a24,1)[0]};
+                Write(image+0xdae5a21,new byte[]{0});Write(image+0xdae5a24,new byte[]{0});
                 log("Native score-HUD and down/distance suppression flags cleared for this practice session.");
             }
             Write(data+80,BitConverter.GetBytes(enabled?1:0));
@@ -492,8 +492,8 @@ namespace SituationalPractice
         private void RestoreHudVisibility()
         {
             if(hudVisibility==null)return;
-            if(Read(image+0xdadd921,1)[0]==0)Write(image+0xdadd921,new byte[]{hudVisibility[0]});
-            if(Read(image+0xdadd924,1)[0]==0)Write(image+0xdadd924,new byte[]{hudVisibility[1]});
+            if(Read(image+0xdae5a21,1)[0]==0)Write(image+0xdae5a21,new byte[]{hudVisibility[0]});
+            if(Read(image+0xdae5a24,1)[0]==0)Write(image+0xdae5a24,new byte[]{hudVisibility[1]});
             hudVisibility=null;
         }
         public static byte[] BuildHudEntry(long image,long data)
@@ -502,16 +502,16 @@ namespace SituationalPractice
             b.H("41833a01");b.J("0f85","native");
             b.H("41837a5001");b.J("0f85","native");
             b.H("83fa14");b.J("0f85","native");
-            b.H("48b8");b.Q(image+0xd9e3818);b.H("83380e");b.J("0f85","native");
-            b.H("48b8");b.Q(image+0xf3f5d48);b.H("833803");b.J("0f85","native");
-            b.H("48b8");b.Q(image+0xf6379e0);b.H("488b004885c0");b.J("0f84","native");
+            b.H("48b8");b.Q(image+0xd9eb808);b.H("83380e");b.J("0f85","native");
+            b.H("48b8");b.Q(image+0xf3fddbc);b.H("833803");b.J("0f85","native");
+            b.H("48b8");b.Q(image+0xf63f9f0);b.H("488b004885c0");b.J("0f84","native");
             b.H("80b88400000001");b.J("0f85","native");
-            b.H("48b8");b.Q(image+0xf8576b0);b.H("488b004885c0");b.J("0f84","native");
+            b.H("48b8");b.Q(image+0xf85f700);b.H("488b004885c0");b.J("0f84","native");
             b.H("488b4010493b4210");b.J("0f85","native");
             // The native pause manager's first byte is the active pause flag.
-            b.H("48b8");b.Q(image+0xf547a00);b.H("488b004885c0");b.J("0f84","phase");
+            b.H("48b8");b.Q(image+0xf54fa00);b.H("488b004885c0");b.J("0f84","phase");
             b.H("803800");b.J("0f85","native");
-            b.Label("phase");b.H("48b8");b.Q(image+0xf8575a0);b.H("488b004885c0");b.J("0f84","native");
+            b.Label("phase");b.H("48b8");b.Q(image+0xf85f5f0);b.H("488b004885c0");b.J("0f84","native");
             b.H("8b80a000000083f801");b.J("0f84","preplay");
             b.H("83f803");b.J("0f84","play");b.H("83f804");b.J("0f85","native");
             b.H("ba04000000");b.J("e9","selected");
@@ -525,11 +525,11 @@ namespace SituationalPractice
             var b=new Emitter();b.H("9c50415249ba");b.Q(data);
             b.H("41833a01");b.J("0f85","native");
             b.H("493b4a10");b.J("0f85","native");
-            b.H("48b8");b.Q(image+0xd9e3818);b.H("83380e");b.J("0f85","native");
-            b.H("48b8");b.Q(image+0xf3f5d48);b.H("833803");b.J("0f85","native");
+            b.H("48b8");b.Q(image+0xd9eb808);b.H("83380e");b.J("0f85","native");
+            b.H("48b8");b.Q(image+0xf3fddbc);b.H("833803");b.J("0f85","native");
             // Suppress only the practice controller's unconditional target reset.
             // Normal first-down, goal-to-go and scenario line setters still run.
-            b.H("48b8");b.Q(image+0x4ff4133);b.H("4839442418");b.J("0f85","native");
+            b.H("48b8");b.Q(image+0x4ff7823);b.H("4839442418");b.J("0f85","native");
             b.H("f041ff4270415a589dc3");
             b.Label("native");b.H("415a589d");b.Raw(Originals[5]);b.Raw(Jump(image+Sites[5]+Originals[5].Length));return b.Finish();
         }
@@ -545,11 +545,11 @@ namespace SituationalPractice
             if(menu){b.J("0f84","menuEnabled");b.H("4183ba");b.I(12368);b.H("01");}
             b.J("0f85","native");
             if(menu)b.Label("menuEnabled");
-            b.H("48b8");b.Q(image+0xd9e3818);b.H("83380e");b.J("0f85","native");
-            b.H("48b8");b.Q(image+0xf3f5d48);b.H("833803");b.J("0f85","native");
-            b.H("48b8");b.Q(image+0xf6379e0);b.H("488b004885c0");b.J("0f84","native");
+            b.H("48b8");b.Q(image+0xd9eb808);b.H("83380e");b.J("0f85","native");
+            b.H("48b8");b.Q(image+0xf3fddbc);b.H("833803");b.J("0f85","native");
+            b.H("48b8");b.Q(image+0xf63f9f0);b.H("488b004885c0");b.J("0f84","native");
             b.H("80b88400000001");b.J("0f85","native");
-            b.H("48b8");b.Q(image+0xf8576b0);b.H("488b004885c0");b.J("0f84","native");
+            b.H("48b8");b.Q(image+0xf85f700);b.H("488b004885c0");b.J("0f84","native");
             b.H("488b4010493b4210");b.J("0f85","native");return b;
         }
         public static byte[] BuildReturnGuard(long image,long data)
@@ -558,36 +558,36 @@ namespace SituationalPractice
             b.H("493b4a10");b.J("0f85","native");
             // Diagnostic only: record the caller before the native end-play transition.
             b.H("488b442418498982");b.I(12080);
-            b.H("48b8");b.Q(image+0xf8575a0);b.H("488b008b80a0000000418982");b.I(12088);
+            b.H("48b8");b.Q(image+0xf85f5f0);b.H("488b008b80a0000000418982");b.I(12088);
             b.H("80b9f101000000");b.J("0f85","native"); // Never suppress a scored play.
-            b.H("48b8");b.Q(image+0xf8575a0);b.H("488b004885c0");b.J("0f84","native");
+            b.H("48b8");b.Q(image+0xf85f5f0);b.H("488b004885c0");b.J("0f84","native");
             b.H("83b8a000000003");b.J("0f85","native");
-            b.H("48b8");b.Q(image+0x5d5ad16);b.H("4839442418");b.J("0f84","skip");
-            b.H("48b8");b.Q(image+0x5d72356);b.H("4839442418");b.J("0f85","native");
+            b.H("48b8");b.Q(image+0x5d5e7e6);b.H("4839442418");b.J("0f84","skip");
+            b.H("48b8");b.Q(image+0x5d75e26);b.H("4839442418");b.J("0f85","native");
             b.H("8b81c80100003b81cc010000");b.J("0f84","native");
             b.Label("skip");b.H("f041ff82a0000000415a589dc3");
             // Relocate the original conditional branch; its displacement cannot
             // be copied verbatim into the remote allocation.
             b.Label("native");b.H("415a589d");b.Raw(Sub(Originals[8],0,11));b.J("0f85","alreadyEnding");
             b.Raw(Jump(image+Sites[8]+Originals[8].Length));
-            b.Label("alreadyEnding");b.Raw(Jump(image+0x5d4a02f));return b.Finish();
+            b.Label("alreadyEnding");b.Raw(Jump(image+0x5d4daff));return b.Finish();
         }
         public static byte[] BuildPracticePlayCallUi(long image,long data)
         {
             var b=StatsScope(image,data,true);
-            b.H("48b8");b.Q(image+0xdadd380);b.H("483bc8");b.J("0f85","native");
-            b.H("48b8");b.Q(image+0xf8575a0);b.H("488b004885c0");b.J("0f84","native");
+            b.H("48b8");b.Q(image+0xdae5480);b.H("483bc8");b.J("0f85","native");
+            b.H("48b8");b.Q(image+0xf85f5f0);b.H("488b004885c0");b.J("0f84","native");
             b.H("83b8a000000005");b.J("0f85","native");
             // Native state entry may send its own picker notification. During
             // a mode reset, finish lineup initialization before showing any UI.
             b.H("418b82");b.I(12448);b.H("83e80183f801");b.J("0f87","normalPicker");
             b.H("415a589dc3");
             b.Label("normalPicker");b.H("41833a01");b.J("0f85","native");
-            b.H("f041ff82b0000000415a589d33d2");b.Raw(Jump(image+0x7babb30));
+            b.H("f041ff82b0000000415a589d33d2");b.Raw(Jump(image+0x7baf6d0));
             // State entry also sends a practice notification. Redirect it before
             // the UI queues the opposite side, preserving the normal UI flow.
             b.Label("native");b.H("415a589d");b.Raw(Sub(Originals[10],0,11));
-            b.H("ff1502000000eb08");b.Q(image+0x3f079e0);b.Raw(Jump(image+Sites[10]+Originals[10].Length));return b.Finish();
+            b.H("ff1502000000eb08");b.Q(image+0x3f0a300);b.Raw(Jump(image+Sites[10]+Originals[10].Length));return b.Finish();
         }
         public static byte[] BuildInitialPlayCallTick(long image,long data)
         {
@@ -602,7 +602,7 @@ namespace SituationalPractice
             var b=StatsScope(image,data,false,!setup);
             if(setup){b.H("41837a0401");b.J("0f85","native");}
             if(setup){b.H("4183bac000000000");b.J("0f85","native");}
-            b.H("48b8");b.Q(image+0xf8575a0);b.H("488b004885c0");b.J("0f84","native");
+            b.H("48b8");b.Q(image+0xf85f5f0);b.H("488b004885c0");b.J("0f84","native");
             b.H(setup?"83b8a000000006":"83b8a000000005");b.J("0f85","native");
             b.H(setup?"483b4860":"483b4858");b.J("0f85","native");
             // Native startup stages can clear choices between player setup and
@@ -627,14 +627,14 @@ namespace SituationalPractice
             if(!setup){
                 b.H("4183ba");b.I(12012);b.H("00");b.J("0f85","sideReady");
                 b.H("498b42108b80c801000083f801");b.J("0f87","native");
-                b.H("5248ba");b.Q(image+0xf8abb50);b.H("488b124885d2");b.J("0f84","unknownSide");
+                b.H("5248ba");b.Q(image+0xf8b3ba0);b.H("488b124885d2");b.J("0f84","unknownSide");
                 b.H("8b522883e20c83fa04");b.J("0f84","userOffense");
                 b.H("83fa08");b.J("0f85","unknownSide");b.H("83f001");
                 b.Label("userOffense");b.H("418982a80000005a");b.J("e9","sideReady");
                 b.Label("unknownSide");b.H("5a41c782c800000000000000");b.J("e9","native");
                 b.Label("sideReady");
             }
-            b.H("48b8");b.Q(image+0xfa582a0);b.H("488b004885c0");b.J("0f84","native");
+            b.H("48b8");b.Q(image+0xfa602a0);b.H("488b004885c0");b.J("0f84","native");
             b.H("4183baa800000001");b.J("0f87","native");
             // The first UI can clear an opponent choice made while waiting for
             // the user. Supply it only after the user's native choice exists.
@@ -642,20 +642,20 @@ namespace SituationalPractice
             if(!setup) {
                 b.H("4183bac800000001");b.J("0f85","native");
                 b.H("52418b92a8000000413b92cc000000");b.J("0f85","stale");
-                b.H("48b8");b.Q(image+0xf8abb50);b.H("488b004885c0");b.J("0f84","stale");
+                b.H("48b8");b.Q(image+0xf8b3ba0);b.H("488b004885c0");b.J("0f84","stale");
                 b.H("50498b42108b80c8010000413b82");b.I(OpponentPossessionOffset);b.H("58");b.J("0f85","stale");
                 b.H("528b502883e20c413b92");b.I(12008);b.H("5a");b.J("0f85","stale");
                 b.H("486bd224488d441070");
                 for(int i=0;i<5;i++){b.H("8b50");b.B((byte)(i*4));b.H("413b92");b.I(228+i*4);b.J("0f85","stale");}
                 // Restore RAX to the native play-call manager before committing.
-                b.H("5a48b8");b.Q(image+0xfa582a0);b.H("488b00");
+                b.H("5a48b8");b.Q(image+0xfa602a0);b.H("488b00");
             }
             b.H(setup?"41c782c000000001000000":"41c782b400000001000000");
             if(!setup){b.H("41c782");b.I(12012);b.I(1);}
             b.H("51524150415141534881ec88000000");
             for(int x=0;x<6;x++){b.H("f30f7f");b.B((byte)(0x84+x*8));b.H("24");b.I(32+x*16);}
             b.H("488bc8ba01000000412b92a8000000");
-            if(setup){b.H("48b8");b.Q(image+0x7b7e7e0);}
+            if(setup){b.H("48b8");b.Q(image+0x7b82380);}
             else b.H("498b82e02e0000");
             b.H("ffd0");
             b.H("49ba");b.Q(data);b.H("f041ff82b8000000");
@@ -664,7 +664,7 @@ namespace SituationalPractice
             b.H("4881c488000000415b415941585a59");
             if(!setup){b.J("e9","native");b.Label("stale");b.H("5a41c782c800000000000000");}
             b.Label("native");b.H("415a589d");
-            if(setup){b.Raw(Sub(Originals[12],0,13));b.H("ff1502000000eb08");b.Q(image+0x2ad8410);b.Raw(Jump(image+Sites[12]+Originals[12].Length));}
+            if(setup){b.Raw(Sub(Originals[12],0,13));b.H("ff1502000000eb08");b.Q(image+0x2ad9200);b.Raw(Jump(image+Sites[12]+Originals[12].Length));}
             else {b.Raw(Originals[11]);b.Raw(Jump(image+Sites[11]+Originals[11].Length));}
             return b.Finish();
         }
@@ -673,10 +673,10 @@ namespace SituationalPractice
             // RCX manager, EDX CPU side. Use the same native registration and
             // service submission as CallRandomPlay, with our filtered keys.
             var b=new Emitter();b.H("53564881ec88000000488bd94863f2");
-            b.H("48b9");b.Q(image+0xf6379e0);b.H("488b098bd641b80100000041b9ffffffffc7442420ffffffff48b8");b.Q(image+0x4ff5520);b.H("ffd0");
-            b.H("48b8");b.Q(image+0xae33f50);b.H("f30f6f00f30f7f44243048c74424400000000066c74424480000c744244ce7030000c7442450ffffffff");
-            b.H("48b9");b.Q(image+0xe2cb918);b.H("488b094c8d44243049b9");b.Q(data+208);b.H("8bd6c7442420ffffffff488b0148b8");b.Q(image+0xe2cb918);b.H("488b00488b00ff9018040000");
-            b.H("48b9");b.Q(image+0xf8abb50);b.H("488b098bd64c8d4424304c8d4c243048b8");b.Q(image+0x5f09980);b.H("ffd0c684330c0500000148b8");b.Q(data);b.H("c780c800000000000000f0ff80f80000004881c4880000005e5bc3");return b.Finish();
+            b.H("48b9");b.Q(image+0xf63f9f0);b.H("488b098bd641b80100000041b9ffffffffc7442420ffffffff48b8");b.Q(image+0x4ff8c10);b.H("ffd0");
+            b.H("48b8");b.Q(image+0xae3a190);b.H("f30f6f00f30f7f44243048c74424400000000066c74424480000c744244ce7030000c7442450ffffffff");
+            b.H("48b9");b.Q(image+0xe2d3918);b.H("488b094c8d44243049b9");b.Q(data+208);b.H("8bd6c7442420ffffffff488b0148b8");b.Q(image+0xe2d3918);b.H("488b00488b00ff9018040000");
+            b.H("48b9");b.Q(image+0xf8b3ba0);b.H("488b098bd64c8d4424304c8d4c243048b8");b.Q(image+0x5f0d5c0);b.H("ffd0c684330c0500000148b8");b.Q(data);b.H("c780c800000000000000f0ff80f80000004881c4880000005e5bc3");return b.Finish();
         }
         public static byte[] BuildPlayCallRefresh(long image,long data)
         {
@@ -685,7 +685,7 @@ namespace SituationalPractice
             var b=new Emitter();b.H("9c50515241504151415241534881ec88000000");
             for(int x=0;x<6;x++){b.H("f30f7f");b.B((byte)(0x84+x*8));b.H("24");b.I(32+x*16);}
             b.H("49ba");b.Q(data);b.H("41c782");b.I(12016);b.I(0);
-            b.H("41c782a40000000000000048b9");b.Q(image+0xdadd380);b.H("33d248b8");b.Q(image+0x7babb30);b.H("ffd0");
+            b.H("41c782a40000000000000048b9");b.Q(image+0xdae5480);b.H("33d248b8");b.Q(image+0x7baf6d0);b.H("ffd0");
             for(int x=0;x<6;x++){b.H("f30f6f");b.B((byte)(0x84+x*8));b.H("24");b.I(32+x*16);}
             b.H("4881c488000000415b415a415941585a59589dc3");return b.Finish();
         }
@@ -696,25 +696,25 @@ namespace SituationalPractice
         public static byte[] BuildEarlyPlayCall(long image,long data)
         {
             var b=StatsScope(image,data,false,true);
-            b.H("48b8");b.Q(image+0xf8575a0);b.H("488b004885c0");b.J("0f84","native");
+            b.H("48b8");b.Q(image+0xf85f5f0);b.H("488b004885c0");b.J("0f84","native");
             b.H("83b8a000000001");b.J("0f85","native");
-            b.H("48b8");b.Q(image+0xf547a00);b.H("488b004885c0");b.J("0f84","unpaused");
+            b.H("48b8");b.Q(image+0xf54fa00);b.H("488b004885c0");b.J("0f84","unpaused");
             b.H("803800");b.J("0f85","native");
             b.Label("unpaused");
             b.H("4183baa400000001");b.J("0f85","native");
             b.H("41837a0400");b.J("0f85","native");
-            b.H("48b8");b.Q(image+0xfa582a0);b.H("488b004885c0");b.J("0f84","native");
+            b.H("48b8");b.Q(image+0xfa602a0);b.H("488b004885c0");b.J("0f84","native");
             b.H("4183baa800000001");b.J("0f87","native");
             b.H("41c782a40000000000000051524150415141534881ec88000000");
             for(int x=0;x<6;x++){b.H("f30f7f");b.B((byte)(0x84+x*8));b.H("24");b.I(32+x*16);}
             // Enter the complete native state first: it initializes play calling
             // and routes controller input away from the players on the field.
-            b.H("48b8");b.Q(image+0xf8575a0);b.H("488b08ba0500000048b8");b.Q(image+0x5d0e950);b.H("ffd0");
+            b.H("48b8");b.Q(image+0xf85f5f0);b.H("488b08ba0500000048b8");b.Q(image+0x5d12420);b.H("ffd0");
             // The CPU choice is committed by the phase-5 wait hook after the
             // user picks this snap's offense, rather than before opening UI.
             // The ordinary notification avoids the practice service's second
             // user-controlled play-call screen. CPU choice uses its playbook.
-            b.H("48b9");b.Q(image+0xdadd380);b.H("33d248b8");b.Q(image+0x7babb30);b.H("ffd0");
+            b.H("48b9");b.Q(image+0xdae5480);b.H("33d248b8");b.Q(image+0x7baf6d0);b.H("ffd0");
             b.H("49ba");b.Q(data);b.H("f041ff82ac000000f041ff82");b.I(12360);
             for(int x=0;x<6;x++){b.H("f30f6f");b.B((byte)(0x84+x*8));b.H("24");b.I(32+x*16);}
             b.H("4881c488000000415b415941585a59415a589dc3");
@@ -723,9 +723,9 @@ namespace SituationalPractice
         public static byte[] BuildPlayCallTick(long image,long data)
         {
             var b=StatsScope(image,data);
-            b.H("48b8");b.Q(image+0xf8575a0);b.H("488b004885c0");b.J("0f84","native");
+            b.H("48b8");b.Q(image+0xf85f5f0);b.H("488b004885c0");b.J("0f84","native");
             b.H("83b8a000000001");b.J("0f85","native");
-            b.H("48b8");b.Q(image+0xf547a00);b.H("488b004885c0");b.J("0f84","unpaused");
+            b.H("48b8");b.Q(image+0xf54fa00);b.H("488b004885c0");b.J("0f84","unpaused");
             b.H("803800");b.J("0f85","native");
             b.Label("unpaused");
             b.H("4183bafc00000001");b.J("0f85","playcall");
@@ -733,18 +733,18 @@ namespace SituationalPractice
             b.Label("playcall");
             b.H("4183baa400000001");b.J("0f85","native");
             b.H("41837a0400");b.J("0f85","native");
-            b.H("48b8");b.Q(image+0xfa582a0);b.H("488b004885c0");b.J("0f84","native");
+            b.H("48b8");b.Q(image+0xfa602a0);b.H("488b004885c0");b.J("0f84","native");
             b.H("4183baa800000001");b.J("0f87","native");
             b.H("41c782a40000000000000051524150415141534881ec88000000");
             for(int x=0;x<6;x++){b.H("f30f7f");b.B((byte)(0x84+x*8));b.H("24");b.I(32+x*16);}
             // Enter the complete native state first: it initializes play calling
             // and routes controller input away from the players on the field.
-            b.H("48b8");b.Q(image+0xf8575a0);b.H("488b08ba0500000048b8");b.Q(image+0x5d0e950);b.H("ffd0");
+            b.H("48b8");b.Q(image+0xf85f5f0);b.H("488b08ba0500000048b8");b.Q(image+0x5d12420);b.H("ffd0");
             // The CPU choice is committed by the phase-5 wait hook after the
             // user picks this snap's offense, rather than before opening UI.
             // The ordinary notification avoids the practice service's second
             // user-controlled play-call screen. CPU choice uses its playbook.
-            b.H("48b9");b.Q(image+0xdadd380);b.H("33d248b8");b.Q(image+0x7babb30);b.H("ffd0");
+            b.H("48b9");b.Q(image+0xdae5480);b.H("33d248b8");b.Q(image+0x7baf6d0);b.H("ffd0");
             b.H("49ba");b.Q(data);b.H("f041ff82ac000000");
             for(int x=0;x<6;x++){b.H("f30f6f");b.B((byte)(0x84+x*8));b.H("24");b.I(32+x*16);}
             b.H("4881c488000000415b415941585a59415a589dc3");
@@ -754,9 +754,9 @@ namespace SituationalPractice
             b.H("41c742040000000041c782fc0000000000000051524150415141534881ec88000000");
             for(int x=0;x<6;x++){b.H("f30f7f");b.B((byte)(0x84+x*8));b.H("24");b.I(32+x*16);}
             EmitPossession(b,image,data);
-            b.H("498b4a10418b522c48b8");b.Q(image+0x5d59530);b.H("ffd0");
-            b.H("49ba");b.Q(data);b.H("498b4a10f3410f104a3048b8");b.Q(image+0x5d59570);b.H("ffd0");
-            b.H("49ba");b.Q(data);b.H("498b4a10498d522041b00148b8");b.Q(image+0x5d595c0);b.H("ffd0");
+            b.H("498b4a10418b522c48b8");b.Q(image+0x5d5d000);b.H("ffd0");
+            b.H("49ba");b.Q(data);b.H("498b4a10f3410f104a3048b8");b.Q(image+0x5d5d040);b.H("ffd0");
+            b.H("49ba");b.Q(data);b.H("498b4a10498d522041b00148b8");b.Q(image+0x5d5d090);b.H("ffd0");
             EmitScores(b,image,data);
             b.H("49ba");b.Q(data);b.H("418b42184189421c");
             for(int x=0;x<6;x++){b.H("f30f6f");b.B((byte)(0x84+x*8));b.H("24");b.I(32+x*16);}
@@ -782,9 +782,9 @@ namespace SituationalPractice
             b.H("4983ba");b.I(12040);b.H("00");b.J("0f84","native");
             // This adapter action is unused in Dynasty practice. The custom
             // tile invokes it and its native script resumes the paused game.
-            b.H("f041ff82");b.I(12032);b.H("415a589d");b.Raw(Jump(image+0x7c17d20));
+            b.H("f041ff82");b.I(12032);b.H("415a589d");b.Raw(Jump(image+0x7c1b8c0));
             b.Label("native");b.H("415a589d");b.Raw(Sub(Originals[13],0,12));
-            b.H("48b9");b.Q(image+0xbae5718);b.Raw(Jump(image+Sites[13]+Originals[13].Length));return b.Finish();
+            b.H("48b9");b.Q(image+0xbaebe78);b.Raw(Jump(image+Sites[13]+Originals[13].Length));return b.Finish();
         }
         public static byte[] BuildModeText(long image,long data)
         {
@@ -808,11 +808,11 @@ namespace SituationalPractice
         public static byte[] BuildDefaultPracticeRestore(long image,long data)
         {
             var b=StatsScope(image,data,true);
-            b.H("48b8");b.Q(image+0xf8575a0);b.H("488b004885c0");b.J("0f84","native");
+            b.H("48b8");b.Q(image+0xf85f5f0);b.H("488b004885c0");b.J("0f84","native");
             b.H("8b80a000000083f801");b.J("0f84","safePhase");
             b.H("83f805");b.J("0f85","native");
             b.Label("safePhase");
-            b.H("48b8");b.Q(image+0xf547a00);b.H("488b004885c0");b.J("0f84","unpaused");
+            b.H("48b8");b.Q(image+0xf54fa00);b.H("488b004885c0");b.J("0f84","unpaused");
             b.H("803800");b.J("0f85","native");
             b.Label("unpaused");
             // Custom-mode entry is a two-step transaction. Native stages 0/1
@@ -827,9 +827,9 @@ namespace SituationalPractice
             b.H("41c742040000000041c782fc0000000000000041c782a40000000000000041c782c800000000000000");
             SaveCallRegisters(b);
             EmitPossession(b,image,data);
-            b.H("498b4a10418b522c48b8");b.Q(image+0x5d59530);b.H("ffd0");
-            b.H("49ba");b.Q(data);b.H("498b4a10f3410f104a3048b8");b.Q(image+0x5d59570);b.H("ffd0");
-            b.H("49ba");b.Q(data);b.H("498b4a10498d522041b00148b8");b.Q(image+0x5d595c0);b.H("ffd0");
+            b.H("498b4a10418b522c48b8");b.Q(image+0x5d5d000);b.H("ffd0");
+            b.H("49ba");b.Q(data);b.H("498b4a10f3410f104a3048b8");b.Q(image+0x5d5d040);b.H("ffd0");
+            b.H("49ba");b.Q(data);b.H("498b4a10498d522041b00148b8");b.Q(image+0x5d5d090);b.H("ffd0");
             EmitScores(b,image,data);
             // Preserve the pre-snap situation even if the first play finishes
             // before the worker observes the final acknowledgement.
@@ -837,16 +837,16 @@ namespace SituationalPractice
             foreach(var field in new[]{new[]{0x1c8,12416},new[]{0x1d0,12420},new[]{0x16c,12424},new[]{0x1c0,12428},new[]{0x1d8,12432},new[]{0x1dc,12436}}){
                 b.H("8b88");b.I(field[0]);b.H("41898a");b.I(field[1]);
             }
-            b.H("48b9");b.Q(image+0xf8575a0);b.H("488b0949898a");b.I(12408);
+            b.H("48b9");b.Q(image+0xf85f5f0);b.H("488b0949898a");b.I(12408);
             b.H("418b4a4841898a");b.I(12440);
             b.H("418b4a1841898a");b.I(12444);
-            b.H("48b8");b.Q(image+0xf547540);b.H("488b084885c9");b.J("0f84","defaultHudDone");
-            b.H("ba1400000041b00148b8");b.Q(image+0x369ed10);b.H("ffd0");
+            b.H("48b8");b.Q(image+0xf54f540);b.H("488b084885c9");b.J("0f84","defaultHudDone");
+            b.H("ba1400000041b00148b8");b.Q(image+0x36a1450);b.H("ffd0");
             b.Label("defaultHudDone");
             // A real state exit/entry is required to rebuild player lineups.
             // Requesting preplay while already in preplay leaves them unloaded.
             // Keep the mode transaction pending until initialization finishes.
-            b.H("48b8");b.Q(image+0xf8575a0);b.H("488b08ba0500000048b8");b.Q(image+0x5d0e950);b.H("ffd0");
+            b.H("48b8");b.Q(image+0xf85f5f0);b.H("488b08ba0500000048b8");b.Q(image+0x5d12420);b.H("ffd0");
             RestoreCallRegisters(b);b.J("e9","native");
             b.Label("pendingUi");
             b.H("418b82");b.I(12448);b.H("83f801");b.J("0f85","customUiRequest");
@@ -854,11 +854,11 @@ namespace SituationalPractice
             b.Label("customUiRequest");b.H("83f802");b.J("0f85","native");
             b.H("41833a01");b.J("0f85","native");
             b.Label("uiReady");
-            b.H("48b8");b.Q(image+0xf8575a0);b.H("488b0083b8a000000005");b.J("0f85","native");
+            b.H("48b8");b.Q(image+0xf85f5f0);b.H("488b0083b8a000000005");b.J("0f85","native");
             b.H("488b40584885c0");b.J("0f84","native");
             b.H("83781002");b.J("0f85","native");
             b.H("418b82");b.I(12444);b.H("413b4218");b.J("0f85","native"); // captured command == current command
-            b.H("48b8");b.Q(image+0xfa582a0);b.H("488b004885c0");b.J("0f84","native");
+            b.H("48b8");b.Q(image+0xfa602a0);b.H("488b004885c0");b.J("0f84","native");
             b.H("41c782");b.I(12448);b.I(0);
             SaveCallRegisters(b);
             // Default Practice must reopen its normal two-sided picker even
@@ -868,14 +868,14 @@ namespace SituationalPractice
             b.H("41833a00");b.J("0f85","customCachedPlays");
             b.H("66c7800c0500000000");b.J("e9","modeNeedsPicker");
             b.Label("customCachedPlays");
-            b.H("48b8");b.Q(image+0xfa582a0);b.H("488b004885c0");b.J("0f84","modeNeedsPicker");
+            b.H("48b8");b.Q(image+0xfa602a0);b.H("488b004885c0");b.J("0f84","modeNeedsPicker");
             b.H("6681b80c0500000101");b.J("0f84","resumeMode");
             b.Label("modeNeedsPicker");
             b.H("41833a01");b.J("0f84","customUi");
-            b.H("48b9");b.Q(image+0xdadd380);b.H("33d248b8");b.Q(image+0x7babdd0);b.H("ffd0");b.J("e9","uiDone");
-            b.Label("customUi");b.H("48b9");b.Q(image+0xdadd380);b.H("33d248b8");b.Q(image+0x7babb30);b.H("ffd0");b.J("e9","uiDone");
+            b.H("48b9");b.Q(image+0xdae5480);b.H("33d248b8");b.Q(image+0x7baf970);b.H("ffd0");b.J("e9","uiDone");
+            b.Label("customUi");b.H("48b9");b.Q(image+0xdae5480);b.H("33d248b8");b.Q(image+0x7baf6d0);b.H("ffd0");b.J("e9","uiDone");
             b.Label("resumeMode");
-            b.H("48b8");b.Q(image+0xf8575a0);b.H("488b08ba0100000048b8");b.Q(image+0x5d0e950);b.H("ffd0");
+            b.H("48b8");b.Q(image+0xf85f5f0);b.H("488b08ba0100000048b8");b.Q(image+0x5d12420);b.H("ffd0");
             b.Label("uiDone");
             b.H("49ba");b.Q(data);b.H("41c782");b.I(12448);b.I(0);
             b.H("49ba");b.Q(data);b.H("f041ff82");b.I(12384);b.H("418b42184189421c");
@@ -887,15 +887,15 @@ namespace SituationalPractice
             b.H("49ba");b.Q(data);b.H("4183ba");b.I(12048);b.H("01");b.J("0f85","possessionDone");
             b.H("41c782");b.I(12048);b.I(0);
             b.H("498b4a10418b92");b.I(12052);b.H("488b81c801000039d0");b.J("0f84","possessionBaseline");
-            b.H("48b8");b.Q(image+0x5d59f20);b.H("ffd0");
+            b.H("48b8");b.Q(image+0x5d5d9f0);b.H("ffd0");
             b.Label("possessionBaseline");b.H("49ba");b.Q(data);b.H("498b4a10418b82");b.I(12052);b.H("8981cc010000");
             b.Label("possessionDone");b.H("49ba");b.Q(data);
         }
         private static void EmitScores(Emitter b,long image,long data)
         {
             b.H("49ba");b.Q(data);b.H("41837a5401");b.J("0f85","scoresDone");
-            b.H("41c7425400000000498b4a1033d2458b425848b8");b.Q(image+0x35e2110);b.H("ffd0");
-            b.H("49ba");b.Q(data);b.H("498b4a10ba01000000458b425c48b8");b.Q(image+0x35e2110);b.H("ffd0");
+            b.H("41c7425400000000498b4a1033d2458b425848b8");b.Q(image+0x35e4850);b.H("ffd0");
+            b.H("49ba");b.Q(data);b.H("498b4a10ba01000000458b425c48b8");b.Q(image+0x35e4850);b.H("ffd0");
             b.Label("scoresDone");b.H("49ba");b.Q(data);
         }
         public static byte[] BuildSessionStats(long image,long data)
@@ -906,10 +906,10 @@ namespace SituationalPractice
             b.Label("row");
             for(int column=0;column<3;column++){
                 b.H("4c89e18bd64c8d8b");b.I(column==0?0:column==1?64:96);
-                b.H("49b8");b.Q(image+(column==0?0xbab08c0:column==1?0xbab08d0:0xbab08e0));
+                b.H("49b8");b.Q(image+(column==0?0xbab7020:column==1?0xbab7030:0xbab7040));
                 b.H("488b014c8b503041ffd2");
             }
-            b.H("4c89e18bd64533c949b8");b.Q(image+0xbab08f0);b.H("488b01ff5020");
+            b.H("4c89e18bd64533c949b8");b.Q(image+0xbab7050);b.H("488b01ff5020");
             b.H("ffc64881c38000000048b8");b.Q(data);b.H("3bb098000000");b.J("0f8c","row");
             b.H("4883c428415c5f5e5bc3");
             b.Label("native");b.H("415a589d");b.Raw(Originals[7]);b.Raw(Jump(image+Sites[7]+Originals[7].Length));return b.Finish();
@@ -934,9 +934,9 @@ namespace SituationalPractice
         {
             var b=new Emitter(); b.H("9c50415249ba"); b.Q(data);
             b.H("49895a0841833a01"); b.J("0f85","native");
-            b.H("48b8"); b.Q(image+0xd9e3818); b.H("83380e"); b.J("0f85","native");
-            b.H("48b8"); b.Q(image+0xf3f5d48); b.H("833803"); b.J("0f85","native");
-            b.H("48b8"); b.Q(image+0xf8576b0); b.H("488b004885c0"); b.J("0f84","native");
+            b.H("48b8"); b.Q(image+0xd9eb808); b.H("83380e"); b.J("0f85","native");
+            b.H("48b8"); b.Q(image+0xf3fddbc); b.H("833803"); b.J("0f85","native");
+            b.H("48b8"); b.Q(image+0xf85f700); b.H("488b004885c0"); b.J("0f84","native");
             b.H("488b4010493b4210"); b.J("0f85","native");
             if(index==0) {
                 b.H("41837a0401"); b.J("0f85","active");
@@ -944,25 +944,25 @@ namespace SituationalPractice
                 b.H("41c742040000000041c782fc0000000000000051524150415141534881ec80000000");
                 for(int x=0;x<6;x++) { b.H("f30f7f"); b.B((byte)(0x84+x*8)); b.H("24"); b.I(32+x*16); }
                 EmitPossession(b,image,data);
-                b.H("498b4a10418b522c48b8"); b.Q(image+0x5d59530); b.H("ffd0");
-                b.H("49ba"); b.Q(data); b.H("498b4a10f3410f104a3048b8"); b.Q(image+0x5d59570); b.H("ffd0");
-                b.H("49ba"); b.Q(data); b.H("498b4a10498d522041b00148b8"); b.Q(image+0x5d595c0); b.H("ffd0");
+                b.H("498b4a10418b522c48b8"); b.Q(image+0x5d5d000); b.H("ffd0");
+                b.H("49ba"); b.Q(data); b.H("498b4a10f3410f104a3048b8"); b.Q(image+0x5d5d040); b.H("ffd0");
+                b.H("49ba"); b.Q(data); b.H("498b4a10498d522041b00148b8"); b.Q(image+0x5d5d090); b.H("ffd0");
                 b.H("49ba");b.Q(data);b.H("41837a5401");b.J("0f85","scoresDone");
-                b.H("41c7425400000000498b4a1033d2458b425848b8");b.Q(image+0x35e2110);b.H("ffd0");
-                b.H("49ba");b.Q(data);b.H("498b4a10ba01000000458b425c48b8");b.Q(image+0x35e2110);b.H("ffd0");
+                b.H("41c7425400000000498b4a1033d2458b425848b8");b.Q(image+0x35e4850);b.H("ffd0");
+                b.H("49ba");b.Q(data);b.H("498b4a10ba01000000458b425c48b8");b.Q(image+0x35e4850);b.H("ffd0");
                 b.Label("scoresDone");
                 // Use the complete native HUD selector: state, visual style and
                 // script HUD update, rather than the isolated typed message.
                 b.H("49ba"); b.Q(data);b.H("41837a5001");b.J("0f85","hudDone");
-                b.H("48b8");b.Q(image+0xf547540);b.H("488b084885c9");b.J("0f84","hudDone");
-                b.H("ba1400000041b00148b8");b.Q(image+0x369ed10);b.H("ffd0");
+                b.H("48b8");b.Q(image+0xf54f540);b.H("488b084885c9");b.J("0f84","hudDone");
+                b.H("ba1400000041b00148b8");b.Q(image+0x36a1450);b.H("ffd0");
                 b.Label("hudDone");
                 b.H("49ba"); b.Q(data); b.H("418b42184189421c");
                 for(int x=0;x<6;x++) { b.H("f30f6f"); b.B((byte)(0x84+x*8)); b.H("24"); b.I(32+x*16); }
                 b.H("4881c480000000415b415941585a59");
             }
             if(index==2) {
-                b.H("48b8"); b.Q(image+0xf8575a0); b.H("488b004885c0"); b.J("0f84","active");
+                b.H("48b8"); b.Q(image+0xf85f5f0); b.H("488b004885c0"); b.J("0f84","active");
                 b.H("83b8a000000004"); b.J("0f85","active");
                 b.H("488b40504885c0"); b.J("0f84","active");
                 b.H("83b85002000000"); b.J("0f85","zeroGain");
@@ -973,7 +973,7 @@ namespace SituationalPractice
             }
             b.Label("active"); b.H("415a589d"); b.Raw(Jump(image+Skips[index]));
             b.Label("native"); b.H("415a589d"); b.Raw(Sub(Originals[index],0,7)); b.J("0f84","skip");
-            b.H("48b8"); b.Q(image+0xf8576b0); b.H("488b00"); b.Raw(Jump(image+Sites[index]+Originals[index].Length));
+            b.H("48b8"); b.Q(image+0xf85f700); b.H("488b00"); b.Raw(Jump(image+Sites[index]+Originals[index].Length));
             b.Label("skip"); b.Raw(Jump(image+Skips[index])); return b.Finish();
         }
         public static byte[] BuildTrace(long image,long data)
@@ -983,7 +983,7 @@ namespace SituationalPractice
             // that sequence last, rather than rereading a moving global counter.
             b.H("b801000000f0410fc14240ffc0448bc883e03fc1e0064d8d9c020001000045894b04");
             b.H("488b4424284989430849894b10488b0249894318488b8168010000498943208b81d001000041894328");
-            b.H("48b8"); b.Q(image+0xf8575a0); b.H("488b004885c0"); b.J("0f84","publish");
+            b.H("48b8"); b.Q(image+0xf85f5f0); b.H("488b004885c0"); b.J("0f84","publish");
             b.H("448b88a000000045894b2c448b88a400000045894b30");
             b.Label("publish"); b.H("418b43044189034159415b415a589d"); b.Raw(Originals[3]); b.Raw(Jump(image+Sites[3]+Originals[3].Length)); return b.Finish();
         }
@@ -1080,9 +1080,9 @@ namespace SituationalPractice
         private long Long(long address){return BitConverter.ToInt64(read(address,8),0);}
         private long Current()
         {
-            long root=Long(image+0xf8abf80);if(root==0)return 0;
+            long root=Long(image+0xf8b3fd0);if(root==0)return 0;
             long processor=Long(root+0xea28);if(processor==0)return 0;
-            if(Long(processor)!=image+0xb474928)return 0;
+            if(Long(processor)!=image+0xb47b048)return 0;
             return processor;
         }
         internal string State {get{

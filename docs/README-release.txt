@@ -1,5 +1,7 @@
-DRIVE-BASED PRACTICE 0.8.19
+DRIVE-BASED PRACTICE 0.8.20
 By Ace
+
+Updated for the October 29, 2026 game patch.
 
 Put SituationalPractice.dll in MMC Mod Manager's Plugins folder. Restart MMC
 and launch the game through it. Enter practice in an offline Dynasty.

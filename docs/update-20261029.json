@@ -1,0 +1,414 @@
+{
+  "patch": "October 29, 2026",
+  "previousLayout": "October 13, 2026",
+  "method": "Unique masked instruction matches, paired native RIP/call operands, containing-object member offsets and vtable cross-checks; native region hashes verified against read-only running-game capture.",
+  "sourceReference": "Sdmart3 controller-select-source-0.1.0 (reviewed, not executed or redistributed)",
+  "wholeExeHashGate": false,
+  "addresses": [
+    {
+      "previous": "0x25a3060",
+      "current": "0x25a3e60",
+      "evidence": "unique masked 64"
+    },
+    {
+      "previous": "0x2ad8410",
+      "current": "0x2ad9200",
+      "evidence": "paired operand 0x5d59f2e"
+    },
+    {
+      "previous": "0x34864f0",
+      "current": "0x34875e0",
+      "evidence": "unique masked 64"
+    },
+    {
+      "previous": "0x35bfd70",
+      "current": "0x35c24b0",
+      "evidence": "unique masked 64"
+    },
+    {
+      "previous": "0x35e0bf0",
+      "current": "0x35e3330",
+      "evidence": "unique masked 64"
+    },
+    {
+      "previous": "0x35e0cb2",
+      "current": "0x35e33f2",
+      "evidence": "unique masked 64"
+    },
+    {
+      "previous": "0x35e2110",
+      "current": "0x35e4850",
+      "evidence": "unique masked 64"
+    },
+    {
+      "previous": "0x35fd200",
+      "current": "0x35ff940",
+      "evidence": "unique masked 64"
+    },
+    {
+      "previous": "0x35feb00",
+      "current": "0x3601240",
+      "evidence": "unique masked 64"
+    },
+    {
+      "previous": "0x35ff120",
+      "current": "0x3601860",
+      "evidence": "unique masked 64"
+    },
+    {
+      "previous": "0x35ff6ef",
+      "current": "0x3601e2f",
+      "evidence": "unique masked 64"
+    },
+    {
+      "previous": "0x35ff6f4",
+      "current": "0x3601e34",
+      "evidence": "unique masked 64"
+    },
+    {
+      "previous": "0x369ed10",
+      "current": "0x36a1450",
+      "evidence": "unique masked 64"
+    },
+    {
+      "previous": "0x377bb40",
+      "current": "0x377e340",
+      "evidence": "unique masked 64"
+    },
+    {
+      "previous": "0x3f079e0",
+      "current": "0x3f0a300",
+      "evidence": "paired operand 0x7babddb"
+    },
+    {
+      "previous": "0x4ff38d0",
+      "current": "0x4ff6fc0",
+      "evidence": "unique masked 64"
+    },
+    {
+      "previous": "0x4ff39ce",
+      "current": "0x4ff70be",
+      "evidence": "unique masked 64"
+    },
+    {
+      "previous": "0x4ff39fb",
+      "current": "0x4ff70eb",
+      "evidence": "unique masked 64"
+    },
+    {
+      "previous": "0x4ff3a97",
+      "current": "0x4ff7187",
+      "evidence": "unique masked 64"
+    },
+    {
+      "previous": "0x4ff3d10",
+      "current": "0x4ff7400",
+      "evidence": "unique masked 64"
+    },
+    {
+      "previous": "0x4ff3d66",
+      "current": "0x4ff7456",
+      "evidence": "unique masked 64"
+    },
+    {
+      "previous": "0x4ff3e03",
+      "current": "0x4ff74f3",
+      "evidence": "unique masked 64"
+    },
+    {
+      "previous": "0x4ff3ff0",
+      "current": "0x4ff76e0",
+      "evidence": "unique masked 64"
+    },
+    {
+      "previous": "0x4ff4133",
+      "current": "0x4ff7823",
+      "evidence": "unique masked 64"
+    },
+    {
+      "previous": "0x4ff5520",
+      "current": "0x4ff8c10",
+      "evidence": "paired operand 0x7b7e82b"
+    },
+    {
+      "previous": "0x5d0e950",
+      "current": "0x5d12420",
+      "evidence": "paired operand 0x5d4a01b"
+    },
+    {
+      "previous": "0x5d49e30",
+      "current": "0x5d4d900",
+      "evidence": "paired operand 0x5d4a896"
+    },
+    {
+      "previous": "0x5d4a02f",
+      "current": "0x5d4daff",
+      "evidence": "continuation in matched owner 0x5d49e30"
+    },
+    {
+      "previous": "0x5d4a660",
+      "current": "0x5d4e130",
+      "evidence": "unique masked 64"
+    },
+    {
+      "previous": "0x5d59530",
+      "current": "0x5d5d000",
+      "evidence": "paired operand 0x5d6cc80"
+    },
+    {
+      "previous": "0x5d59570",
+      "current": "0x5d5d040",
+      "evidence": "paired operand 0x4ff412e"
+    },
+    {
+      "previous": "0x5d595c0",
+      "current": "0x5d5d090",
+      "evidence": "paired operand 0x5d6cccc"
+    },
+    {
+      "previous": "0x5d59f20",
+      "current": "0x5d5d9f0",
+      "evidence": "paired operand 0x35e0d8d"
+    },
+    {
+      "previous": "0x5d5aaa0",
+      "current": "0x5d5e570",
+      "evidence": "paired operand 0x5d6ceb8"
+    },
+    {
+      "previous": "0x5d5ad16",
+      "current": "0x5d5e7e6",
+      "evidence": "paired operand 0x5d5ace7"
+    },
+    {
+      "previous": "0x5d6ca80",
+      "current": "0x5d70550",
+      "evidence": "unique masked 64"
+    },
+    {
+      "previous": "0x5d6ccd1",
+      "current": "0x5d707a1",
+      "evidence": "unique masked 64"
+    },
+    {
+      "previous": "0x5d70850",
+      "current": "0x5d74320",
+      "evidence": "unique masked 64"
+    },
+    {
+      "previous": "0x5d72356",
+      "current": "0x5d75e26",
+      "evidence": "unique masked 64"
+    },
+    {
+      "previous": "0x5f09980",
+      "current": "0x5f0d5c0",
+      "evidence": "unique masked 64"
+    },
+    {
+      "previous": "0x5fde170",
+      "current": "0x5fe1bd0",
+      "evidence": "unique masked 64"
+    },
+    {
+      "previous": "0x7b7e7e0",
+      "current": "0x7b82380",
+      "evidence": "unique masked 64"
+    },
+    {
+      "previous": "0x7b7e964",
+      "current": "0x7b82504",
+      "evidence": "unique masked 64"
+    },
+    {
+      "previous": "0x7b7e969",
+      "current": "0x7b82509",
+      "evidence": "unique masked 64"
+    },
+    {
+      "previous": "0x7b7fb10",
+      "current": "0x7b836b0",
+      "evidence": "unique masked 64"
+    },
+    {
+      "previous": "0x7b99d90",
+      "current": "0x7b9d930",
+      "evidence": "unique masked 64"
+    },
+    {
+      "previous": "0x7babb30",
+      "current": "0x7baf6d0",
+      "evidence": "unique masked 256"
+    },
+    {
+      "previous": "0x7babda0",
+      "current": "0x7baf940",
+      "evidence": "unique masked 64"
+    },
+    {
+      "previous": "0x7babdd0",
+      "current": "0x7baf970",
+      "evidence": "unique masked 64"
+    },
+    {
+      "previous": "0x7bcad50",
+      "current": "0x7bce8f0",
+      "evidence": "unique masked 128"
+    },
+    {
+      "previous": "0x7c17d20",
+      "current": "0x7c1b8c0",
+      "evidence": "paired operand 0x7bcad93"
+    },
+    {
+      "previous": "0xae33f50",
+      "current": "0xae3a190",
+      "evidence": "paired operand 0x7b7e830"
+    },
+    {
+      "previous": "0xb474928",
+      "current": "0xb47b048",
+      "evidence": "unique RIP xref or mapped vtable method"
+    },
+    {
+      "previous": "0xb4781e8",
+      "current": "0xb47e908",
+      "evidence": "unique RIP xref or mapped vtable method"
+    },
+    {
+      "previous": "0xb479070",
+      "current": "0xb47f790",
+      "evidence": "unique RIP xref or mapped vtable method"
+    },
+    {
+      "previous": "0xb646318",
+      "current": "0xb64ca78",
+      "evidence": "unique RIP xref or mapped vtable method"
+    },
+    {
+      "previous": "0xb646440",
+      "current": "0xb64cba0",
+      "evidence": "unique RIP xref or mapped vtable method"
+    },
+    {
+      "previous": "0xb646598",
+      "current": "0xb64ccf8",
+      "evidence": "unique RIP xref or mapped vtable method"
+    },
+    {
+      "previous": "0xb6465a0",
+      "current": "0xb64cd00",
+      "evidence": "unique RIP xref or mapped vtable method"
+    },
+    {
+      "previous": "0xb6467d0",
+      "current": "0xb64cf30",
+      "evidence": "unique RIP xref or mapped vtable method"
+    },
+    {
+      "previous": "0xbab08c0",
+      "current": "0xbab7020",
+      "evidence": "paired operand 0x7b99e2d"
+    },
+    {
+      "previous": "0xbab08d0",
+      "current": "0xbab7030",
+      "evidence": "paired operand 0x7b99e5a"
+    },
+    {
+      "previous": "0xbab08e0",
+      "current": "0xbab7040",
+      "evidence": "paired operand 0x7b99e8b"
+    },
+    {
+      "previous": "0xbab08f0",
+      "current": "0xbab7050",
+      "evidence": "paired operand 0x7b99e9f"
+    },
+    {
+      "previous": "0xbae5718",
+      "current": "0xbaebe78",
+      "evidence": "paired operand 0x7bcad5c"
+    },
+    {
+      "previous": "0xd9e3818",
+      "current": "0xd9eb808",
+      "evidence": "paired operand 0x7ee1fc3"
+    },
+    {
+      "previous": "0xdadd380",
+      "current": "0xdae5480",
+      "evidence": "paired operand 0x7babdf6"
+    },
+    {
+      "previous": "0xdadd921",
+      "current": "0xdae5a21",
+      "evidence": "containing object + verified member offset"
+    },
+    {
+      "previous": "0xdadd924",
+      "current": "0xdae5a24",
+      "evidence": "containing object + verified member offset"
+    },
+    {
+      "previous": "0xe2cb918",
+      "current": "0xe2d3918",
+      "evidence": "paired operand 0x7b7e891"
+    },
+    {
+      "previous": "0xf3f5d48",
+      "current": "0xf3fddbc",
+      "evidence": "paired operand 0x3009b70"
+    },
+    {
+      "previous": "0xf547540",
+      "current": "0xf54f540",
+      "evidence": "unique RIP xref or mapped vtable method"
+    },
+    {
+      "previous": "0xf547a00",
+      "current": "0xf54fa00",
+      "evidence": "paired operand 0x369eda8"
+    },
+    {
+      "previous": "0xf553bb0",
+      "current": "0xf55bbb0",
+      "evidence": "unique RIP xref or mapped vtable method"
+    },
+    {
+      "previous": "0xf6379e0",
+      "current": "0xf63f9f0",
+      "evidence": "paired operand 0x7b7e80e"
+    },
+    {
+      "previous": "0xf856ef8",
+      "current": "0xf85ef48",
+      "evidence": "paired operand 0x5d6d036"
+    },
+    {
+      "previous": "0xf8575a0",
+      "current": "0xf85f5f0",
+      "evidence": "paired operand 0x5d4a67e"
+    },
+    {
+      "previous": "0xf8576b0",
+      "current": "0xf85f700",
+      "evidence": "paired operand 0x5d4a883"
+    },
+    {
+      "previous": "0xf8abb50",
+      "current": "0xf8b3ba0",
+      "evidence": "unique RIP xref or mapped vtable method"
+    },
+    {
+      "previous": "0xf8abf80",
+      "current": "0xf8b3fd0",
+      "evidence": "paired operand 0x4ff422c"
+    },
+    {
+      "previous": "0xfa582a0",
+      "current": "0xfa602a0",
+      "evidence": "unique RIP xref or mapped vtable method"
+    }
+  ]
+}
