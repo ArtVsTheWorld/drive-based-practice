@@ -1,0 +1,17 @@
+{
+  "format": 1,
+  "title": "Expanded Practice",
+  "version": "0.8.21",
+  "repository": "https://github.com/ArtVsTheWorld/DynastyCOT",
+  "revision": "e9322de06b3309b113d1e98b169a76a68ad22b25",
+  "modulePath": "Modules/DrivePractice",
+  "baselineTag": "v0.8.18",
+  "baselineCommit": "0b3998949a63c842f02d0f05da4c5f66ecb22ad0",
+  "firstPublishedStandalone": false,
+  "archive": "ExpandedPractice-0.8.21.zip",
+  "archiveSha256": "9b85ce8b05e230713e61ab039067005a52145876d5b81d8781d1ed989a55ae05",
+  "dllSha256": "790f7555b6bb0a2ca5331705ef10449490037e40919036ce6e716a1368376891",
+  "threeFileZip": true,
+  "preview": true,
+  "sourceTreeHere": "historical; use pinned integration workspace"
+}

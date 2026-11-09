@@ -1,54 +1,23 @@
-# Drive-Based Practice
+# Expanded Practice
 
-By Ace. Offline Dynasty practice for College Football 27.
+**By Ace.** Default Practice, full drives and scrimmages in offline Dynasty or main-menu Practice.
 
-Updated for the October 29, 2026 game patch.
+**[Download 0.8.21 ZIP](https://github.com/ArtVsTheWorld/drive-based-practice/releases/download/v0.8.21/ExpandedPractice-0.8.21.zip)** · [Full feature list](FEATURES.md) · [What's new](RELEASES.md)
 
-Keep normal practice, or switch to drives and scrimmage with ball movement, downs,
-the in-game scoreboard and session stats.
+**Standalone preview:** the new wrapper still needs clean-launch live acceptance.
 
-## Install
+## Install or update
 
-Download the ZIP from [Releases](https://github.com/ArtVsTheWorld/drive-based-practice/releases).
-Close the game and MMC, copy `SituationalPractice.dll` into MMC's `Plugins` folder,
-then restart MMC and launch the game through it.
+1. Close the game and MMC Mod Manager.
+2. Put **ExpandedPractice.dll** directly in the versioned Mod Manager's **Plugins** folder. The ZIP contains that DLL, README.txt and FEATURES.md. Matching support files are embedded and prepared automatically.
+3. Move older duplicate plugin DLLs outside Plugins, keeping settings/history folders. Restart MMC and launch normally. Use a writable MMC folder outside Program Files.
 
-Enter Dynasty practice. **Default Practice** is selected each time you enter.
-It works like the game's regular practice: the ball returns to the same spot,
-and you select the plays for both sides.
+Read README.txt in the ZIP for this module's menu, old filenames, logs and removal steps. Use one provider of each feature. If keeping COT for other modules, disable this feature in COT before using the standalone. You can install any combination of matching current standalone modules.
 
-**No initialization play is required in any mode.** Choose a drive mode from the
-pause menu, select your play, and start. The first snap counts toward the drive
-and session stats.
+**Want one feature? Download its standalone ZIP. Want the collection? [Download Dynasty COT](https://github.com/ArtVsTheWorld/DynastyCOT/releases).** See the [compatibility and saved-data guide](https://github.com/ArtVsTheWorld/DynastyCOT/blob/e9322de06b3309b113d1e98b169a76a68ad22b25/docs/standalones.md).
 
-## Modes
+## Source and verification
 
-- **Default Practice:** the game's normal practice, with its usual ball resets and
-  play selection. Custom scoring, drive tracking and CPU play selection are off.
-- **Drive Practice:** repeated drives from your chosen spot. Offensive touchdowns
-  score 6, defensive turnovers 4, fourth-down stops 2, and return touchdowns 6 total.
-- **Scrimmage:** possession changes after scores and turnovers. Touchdowns score 6
-  and safeties 2. Turnovers and stops have no bonus points.
+This repository is the standalone download/help front door. Current releases are built from the [single maintained COT workspace](https://github.com/ArtVsTheWorld/DynastyCOT/tree/e9322de06b3309b113d1e98b169a76a68ad22b25), including [this module's source](https://github.com/ArtVsTheWorld/DynastyCOT/tree/e9322de06b3309b113d1e98b169a76a68ad22b25/Modules/DrivePractice) and shared build/packaging code. `source-release.json` pins the exact source revision, baseline and artifact hashes.
 
-Use **Pause > Mode** to cycle through Default Practice, Drive Practice and Scrimmage.
-Switching modes clears scores and stats. In the two drive modes, choose your side's
-play each snap and let the CPU choose the other side. **Stats** shows session totals,
-**Flip Sides** resets the drive and keeps totals, and **Re-spot Ball** starts a fresh
-drive at the chosen spot. Returning to Default Practice restores normal practice
-play selection.
-
-Changes into a drive mode keep the current plays when both teams have already
-selected one. Returning to Default Practice opens normal two-sided play selection.
-The first snap in a drive mode counts normally. Use Choose New Play from the
-pause menu to change plays before that snap.
-
-Drive Practice and Scrimmage enable the game's yellow first-down line. There is
-no game clock, and kicking sequences are not supported. Logs and reports are in
-`Plugins/SituationalPractice`.
-
-## Source
-
-Current version: **0.8.20**. Offensive personnel are not displayed
-while you choose a defensive play.
-
-[Build and test](docs/building.md) | [Updating after an EA patch](docs/updating.md)
+The older source tree retained in this repository is historical; it is **not** the build input for this standalone release. Fixes are maintained in COT rather than separately editing four forks. Release assets include integrity metadata; successful offline checks do not certify every game/overhaul combination.
