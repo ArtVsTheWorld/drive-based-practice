@@ -1,4 +1,4 @@
-# Expanded Practice 0.8.21 - standalone preview
+# Expanded Practice 0.8.21 - standalone release
 
 Compared with the last published standalone release, **v0.8.18**.
 
@@ -13,6 +13,8 @@ Default Practice, full-drive downs/distance, Scrimmage possession changes, score
 
 Move old `SituationalPractice.dll` outside Plugins and keep its data. Disable COT's Expanded Practice module if using the standalone beside COT. Use matched current modules: older practice helpers may not satisfy Beyond the Field's exact hook contract or Extra Settings' controller bridge.
 
-Validation: the practice regression suites passed, including drive/defense/opponent/session/scrimmage/mode/start/first-down/diagnostics checks. The shared practice contract passed 5,009 ownership/mutation checks, and all-four package/coexistence fixtures passed. The helper matches COT 1.0.2 byte-for-byte. **This new wrapper is a preview: clean-launch live acceptance remains pending.** No live game was patched during these tests.
+Validation: the practice regression suites passed, including drive/defense/opponent/session/scrimmage/mode/start/first-down/diagnostics checks. The shared practice contract passed 5,009 ownership/mutation checks, and all-four package/coexistence fixtures passed. The helper matches COT 1.0.2 byte-for-byte. **Ace reported all four standalone releases verified working on November 9, 2026.** No live game was patched during these tests.
 
 Source comparison: old tag `v0.8.18`, commit `0b3998949a63c842f02d0f05da4c5f66ecb22ad0`; current maintained source is pinned in `source-release.json`. Checked changes include `NativeRuntime.cs`, `NativeCompatibility.cs`, `DynastyControllerCompatibility.cs`, `PracticeRunner.cs`, `PracticeAction.cs` and `RuntimeFiles.cs`. Core drive/scoring policies are retained rather than advertised as newly introduced.
+
+Stable promotion: the ZIP and DLL are unchanged from the tested preview. Enclosed preview labels describe the build-time status. Acceptance is user-reported for the tested setup; other game/overhaul combinations are not automatically certified.

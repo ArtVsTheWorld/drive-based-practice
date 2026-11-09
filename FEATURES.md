@@ -13,4 +13,4 @@ Practice a drive or a scrimmage without entering a full game. Works in supported
 - Native scope checks, code fingerprints, main-menu practice eligibility and controller ownership checks are preserved. Unknown or changed owners are not overwritten.
 - Current Beyond the Field recognizes the exact supported practice hook bodies; current Extra Settings has the compatible controller bridge. Different old/modified helpers can be rejected by those contracts.
 - This does not enable drives in arbitrary online modes or replace the normal game simulation. Gameday Atmosphere deliberately does not apply its stadium crowd behavior to Practice.
-- This is a new standalone packaging preview. The gameplay helper matches released COT 1.0.2, but clean-launch testing of the new standalone wrapper remains necessary.
+- The gameplay helper matches released COT 1.0.2. Ace reported the standalone release working on November 9, 2026; other setups still need their own checks.
