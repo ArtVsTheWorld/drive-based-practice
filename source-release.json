@@ -1,24 +1,16 @@
 {
   "format": 1,
-  "title": "Expanded Practice",
-  "version": "0.8.21",
+  "title": "ExpandedPractice",
+  "version": "0.8.23",
+  "status": "private-candidate-not-published",
   "repository": "https://github.com/ArtVsTheWorld/DynastyCOT",
-  "revision": "e9322de06b3309b113d1e98b169a76a68ad22b25",
+  "revision": "226a6b6c6292d202498e7d7fe1c7399335d40f43",
   "modulePath": "Modules/DrivePractice",
-  "baselineTag": "v0.8.18",
-  "baselineCommit": "0b3998949a63c842f02d0f05da4c5f66ecb22ad0",
-  "firstPublishedStandalone": false,
-  "archive": "ExpandedPractice-0.8.21.zip",
-  "archiveSha256": "9b85ce8b05e230713e61ab039067005a52145876d5b81d8781d1ed989a55ae05",
-  "dllSha256": "790f7555b6bb0a2ca5331705ef10449490037e40919036ce6e716a1368376891",
-  "threeFileZip": true,
-  "preview": false,
-  "sourceTreeHere": "historical; use pinned integration workspace",
-  "releaseStatusRevision": "55f977425d09f5777161a9d815b8df209fa0f8d3",
-  "acceptance": {
-    "kind": "user-reported",
-    "date": "2026-11-09",
-    "scope": "All four standalone releases confirmed verified working in this chat",
-    "testedArchiveUnchanged": true
-  }
+  "baselineTag": "v0.8.21",
+  "baselineCommit": "7cabd9946bdd0d396e609ae17f1d39d8c7fb3260",
+  "archive": "ExpandedPractice-0.8.23.zip",
+  "archiveSha256": "591338ba578cf3dae729a81e9843fbeaf293cccbeab19ebbb1d99b76016a4b70",
+  "dllSha256": "856275e583c83d8fdc9e9d697f6bd48f0fb0d28081418a1b4d58e4b834925185",
+  "lastPublishedVersion": "0.8.21",
+  "sourceTreeHere": "historical; use pinned integration workspace"
 }

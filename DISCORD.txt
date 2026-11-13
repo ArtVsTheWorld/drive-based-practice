@@ -1,0 +1,10 @@
+**ExpandedPractice 0.8.23**
+Changes since 0.8.21
+
+- Avoids the confirmed Dynasty Extensions pregame controller-hook conflict on the supported layout
+- Settings, diagnostics and verified runtime files now use shared AppData, including when MMC is installed in a protected folder
+- Keeps Default, Drive and Scrimmage modes, session statistics and existing native safety checks
+
+Only the exact supported Dynasty Extensions/controller layout is covered. Check both practice entry routes after a clean restart.
+
+Close MMC/game before replacing the DLL. Keep settings/history.

@@ -1,16 +1,18 @@
 # Expanded Practice by Ace
 
-Practice a drive or a scrimmage without entering a full game. Works in supported **offline Dynasty Practice and main-menu Practice**; no other COT module is required.
+Optional drive and scrimmage practice for supported offline Dynasty and main-menu Practice. Other COT modules are not required.
 
-- Keep **Default Practice**, use **Drive Practice**, or choose **Scrimmage** from the native pause-menu Mode control. Ordinary practice remains the default.
-- Drive Practice carries **downs, distance, field position and score** between plays. It brings you back to play selection instead of making every snap a fresh disconnected rep.
-- Scrimmage handles **possession changes** and the supported scoring/turnover flow. Interceptions and fumble returns can continue before the next possession.
-- Choose a supported **starting spot**, switch sides, and use the module's practice controls rather than editing your Dynasty save.
-- Session statistics track the supported practice plays and results. They are practice-session data, not added Dynasty season statistics or official film grades.
-- The existing first-down/drive reset and opponent/defensive selection policies stay included. Switching modes uses their supported play-selection flow; returning to Default Practice remains available.
-- The runtime helper has its own game-session ownership guard. A duplicate helper exits instead of starting a second practice controller.
-- Existing settings/log/diagnostic paths stay under `Plugins/SituationalPractice`. The plugin verifies the embedded helper against its compiled-in SHA256 before launching it, with a read-only lease held through process creation.
-- Native scope checks, code fingerprints, main-menu practice eligibility and controller ownership checks are preserved. Unknown or changed owners are not overwritten.
-- Current Beyond the Field recognizes the exact supported practice hook bodies; current Extra Settings has the compatible controller bridge. Different old/modified helpers can be rejected by those contracts.
-- This does not enable drives in arbitrary online modes or replace the normal game simulation. Gameday Atmosphere deliberately does not apply its stadium crowd behavior to Practice.
-- The gameplay helper matches released COT 1.0.2. Ace reported the standalone release working on November 9, 2026; other setups still need their own checks.
+- Choose Default Practice, Drive Practice or Scrimmage in the native pause-menu Mode control
+- Drive Practice carries downs, distance, field position and score between plays and returns to play selection
+- Scrimmage supports possession changes and scoring/turnover flow, including returns before the next possession
+- Choose supported starting positions, switch sides and return to Default Practice
+- Session statistics track supported practice results without adding them to Dynasty season records
+- Supported first-down markers, drive resets and opponent/defensive selection policies remain included
+- The verified Dynasty Extensions pregame bridge avoids the confirmed controller-hook conflict while preserving hook ownership
+- Settings/logs/diagnostics and verified runtime files use %LOCALAPPDATA%\Ace\DynastyCOT\ExpandedPractice across MMC copies
+- Legacy data is copied without deleting originals; existing AppData preferences win and conflicts are archived
+- Copy ExpandedPractice.dll into Plugins, or let COT install that same DLL; support prepares automatically
+- Session ownership prevents duplicate practice helpers; payload hashes are verified before startup
+- Native fingerprints and offline eligibility remain enforced; unsupported owners are rejected
+- No arbitrary online modes or replacement of normal competitive simulation is included
+- Current companion modules share the supported practice/controller contracts; older modified versions may conflict
