@@ -1,13 +1,13 @@
 {
   "format": 2,
-  "version": "0.8.24",
+  "version": "0.8.26",
   "repository": "ArtVsTheWorld/DynastyCOT",
-  "revision": "a79a45e63b661d2da378dc2c079f5e99374d3d8c",
+  "revision": "ae9910561de6e6c327fb6051926e8a3087f7b242",
   "modulePath": "Modules/DrivePractice",
-  "archive": "ExpandedPractice-0.8.24.zip",
-  "archiveSha256": "2bfd7184f912dd66431abeda4cc1c065354a1be5cd62ab6b2a0f1c3572bfb3a1",
-  "dllSha256": "107b70943cf07fd44e371f2f767d2820b8ab7aad3a51e1eb0e2dd57c1ba94e5f",
+  "archive": "ExpandedPractice-0.8.26.zip",
+  "archiveSha256": "56a2e59bb353df8704fd264706bd982c84169278c8e8596e47854f1bdddb5be6",
+  "dllSha256": "094c8eb3c4a93acb8dd276c3d35f9cabae4632e02c39ae8a50307e6a300d0372",
   "playerGuideSha256": "ee6e5bff53b4f970ec422ba1c100f15e80144001404aecd9958b5b6fddd4e269",
   "fourFileZip": true,
-  "publicBaseline": "0.8.21"
+  "publicBaseline": "0.8.24"
 }

@@ -1,4 +1,4 @@
-# Ace’s Expanded Practice 0.8.24
+# Ace’s Expanded Practice 0.8.26
 
 ## Choose how to practice
 
